@@ -2,178 +2,410 @@
   "description": "Dependency graph for daemonless container images. Used for cascade rebuilds.",
   "base_images": {
     "base": {
-      "packages": ["s6", "execline", "FreeBSD-utilities"],
-      "children": ["arr-base", "nginx-base", "transmission", "transmission-wireguard", "gitea", "tailscale", "traefik", "sabnzbd", "tautulli", "jellyfin", "mealie", "n8n", "overseerr", "unifi", "woodpecker"]
+      "packages": [
+        "s6",
+        "execline",
+        "FreeBSD-utilities"
+      ],
+      "children": [
+        "arr-base",
+        "nginx-base",
+        "transmission",
+        "transmission-wireguard",
+        "gitea",
+        "tailscale",
+        "traefik",
+        "sabnzbd",
+        "tautulli",
+        "jellyfin",
+        "mealie",
+        "n8n",
+        "overseerr",
+        "unifi",
+        "woodpecker"
+      ]
     },
     "arr-base": {
       "parent": "base",
-      "packages": ["sqlite3", "icu", "libunwind", "libinotify", "libiconv", "krb5", "ca_root_nss", "compat13x-amd64", "openssl"],
-      "children": ["radarr", "sonarr", "prowlarr", "lidarr", "readarr"]
+      "packages": [
+        "sqlite3",
+        "icu",
+        "libunwind",
+        "libinotify",
+        "libiconv",
+        "krb5",
+        "ca_root_nss",
+        "compat13x-amd64",
+        "openssl"
+      ],
+      "children": [
+        "radarr",
+        "sonarr",
+        "prowlarr",
+        "lidarr",
+        "readarr"
+      ]
     },
     "nginx-base": {
       "parent": "base",
-      "packages": ["nginx"],
-      "children": ["openspeedtest", "organizr", "smokeping", "nextcloud", "vaultwarden"]
+      "packages": [
+        "nginx"
+      ],
+      "children": [
+        "openspeedtest",
+        "organizr",
+        "smokeping",
+        "nextcloud",
+        "vaultwarden"
+      ]
     }
   },
   "images": {
     "radarr": {
       "parent": "arr-base",
+      "category": "Media Management",
       "tags": {
-        "latest": {"type": "source", "upstream": "radarr"},
-        "pkg": {"type": "pkg", "repo": "quarterly", "package": "radarr"},
-        "pkg-latest": {"type": "pkg", "repo": "latest", "package": "radarr"}
+        "latest": {
+          "type": "source",
+          "upstream": "radarr"
+        },
+        "pkg": {
+          "type": "pkg",
+          "repo": "quarterly",
+          "package": "radarr"
+        },
+        "pkg-latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "radarr"
+        }
       }
     },
     "sonarr": {
       "parent": "arr-base",
+      "category": "Media Management",
       "tags": {
-        "latest": {"type": "source", "upstream": "sonarr"},
-        "pkg": {"type": "pkg", "repo": "quarterly", "package": "sonarr"},
-        "pkg-latest": {"type": "pkg", "repo": "latest", "package": "sonarr"}
+        "latest": {
+          "type": "source",
+          "upstream": "sonarr"
+        },
+        "pkg": {
+          "type": "pkg",
+          "repo": "quarterly",
+          "package": "sonarr"
+        },
+        "pkg-latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "sonarr"
+        }
       }
     },
     "prowlarr": {
       "parent": "arr-base",
+      "category": "Media Management",
       "tags": {
-        "latest": {"type": "source", "upstream": "prowlarr"},
-        "pkg": {"type": "pkg", "repo": "quarterly", "package": "prowlarr"},
-        "pkg-latest": {"type": "pkg", "repo": "latest", "package": "prowlarr"}
+        "latest": {
+          "type": "source",
+          "upstream": "prowlarr"
+        },
+        "pkg": {
+          "type": "pkg",
+          "repo": "quarterly",
+          "package": "prowlarr"
+        },
+        "pkg-latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "prowlarr"
+        }
       }
     },
     "lidarr": {
       "parent": "arr-base",
+      "category": "Media Management",
       "tags": {
-        "latest": {"type": "source", "upstream": "lidarr"},
-        "pkg": {"type": "pkg", "repo": "quarterly", "package": "lidarr"},
-        "pkg-latest": {"type": "pkg", "repo": "latest", "package": "lidarr"}
+        "latest": {
+          "type": "source",
+          "upstream": "lidarr"
+        },
+        "pkg": {
+          "type": "pkg",
+          "repo": "quarterly",
+          "package": "lidarr"
+        },
+        "pkg-latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "lidarr"
+        }
       }
     },
     "readarr": {
       "parent": "arr-base",
+      "category": "Media Management",
       "tags": {
-        "latest": {"type": "source", "upstream": "readarr"},
-        "pkg": {"type": "pkg", "repo": "quarterly", "package": "readarr"},
-        "pkg-latest": {"type": "pkg", "repo": "latest", "package": "readarr"}
+        "latest": {
+          "type": "source",
+          "upstream": "readarr"
+        },
+        "pkg": {
+          "type": "pkg",
+          "repo": "quarterly",
+          "package": "readarr"
+        },
+        "pkg-latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "readarr"
+        }
       }
     },
     "sabnzbd": {
       "parent": "base",
+      "category": "Downloaders",
       "tags": {
-        "latest": {"type": "source", "upstream": "sabnzbd"},
-        "pkg": {"type": "pkg", "repo": "quarterly", "package": "sabnzbd"},
-        "pkg-latest": {"type": "pkg", "repo": "latest", "package": "sabnzbd"}
+        "latest": {
+          "type": "source",
+          "upstream": "sabnzbd"
+        },
+        "pkg": {
+          "type": "pkg",
+          "repo": "quarterly",
+          "package": "sabnzbd"
+        },
+        "pkg-latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "sabnzbd"
+        }
       }
     },
     "tautulli": {
       "parent": "base",
+      "category": "Media Servers",
       "tags": {
-        "latest": {"type": "source", "upstream": "tautulli"},
-        "pkg": {"type": "pkg", "repo": "quarterly", "package": "tautulli"},
-        "pkg-latest": {"type": "pkg", "repo": "latest", "package": "tautulli"}
+        "latest": {
+          "type": "source",
+          "upstream": "tautulli"
+        },
+        "pkg": {
+          "type": "pkg",
+          "repo": "quarterly",
+          "package": "tautulli"
+        },
+        "pkg-latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "tautulli"
+        }
       }
     },
     "jellyfin": {
       "parent": "base",
+      "category": "Media Servers",
       "tags": {
-        "latest": {"type": "source", "upstream": "jellyfin", "wip": true},
-        "pkg": {"type": "pkg", "repo": "quarterly", "package": "jellyfin"},
-        "pkg-latest": {"type": "pkg", "repo": "latest", "package": "jellyfin"}
+        "latest": {
+          "type": "source",
+          "upstream": "jellyfin",
+          "wip": true
+        },
+        "pkg": {
+          "type": "pkg",
+          "repo": "quarterly",
+          "package": "jellyfin"
+        },
+        "pkg-latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "jellyfin"
+        }
       }
     },
     "transmission": {
       "parent": "base",
+      "category": "Downloaders",
       "tags": {
-        "latest": {"type": "pkg", "repo": "latest", "package": "transmission-daemon"}
+        "latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "transmission-daemon"
+        }
       }
     },
     "transmission-wireguard": {
       "parent": "base",
+      "category": "Downloaders",
       "tags": {
-        "latest": {"type": "pkg", "repo": "latest", "package": "transmission-daemon"}
+        "latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "transmission-daemon"
+        }
       }
     },
     "gitea": {
       "parent": "base",
+      "category": "Infrastructure",
       "tags": {
-        "latest": {"type": "pkg", "repo": "latest", "package": "gitea"}
+        "latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "gitea"
+        }
       }
     },
     "tailscale": {
       "parent": "base",
+      "category": "Infrastructure",
       "tags": {
-        "latest": {"type": "pkg", "repo": "latest", "package": "tailscale"}
+        "latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "tailscale"
+        }
       }
     },
     "traefik": {
       "parent": "base",
+      "category": "Infrastructure",
       "tags": {
-        "latest": {"type": "source", "upstream": "traefik"},
-        "pkg": {"type": "pkg", "repo": "quarterly", "package": "traefik"},
-        "pkg-latest": {"type": "pkg", "repo": "latest", "package": "traefik"}
+        "latest": {
+          "type": "source",
+          "upstream": "traefik"
+        },
+        "pkg": {
+          "type": "pkg",
+          "repo": "quarterly",
+          "package": "traefik"
+        },
+        "pkg-latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "traefik"
+        }
       }
     },
     "openspeedtest": {
       "parent": "nginx-base",
+      "category": "Utilities",
       "tags": {
-        "latest": {"type": "source", "upstream": "openspeedtest"}
+        "latest": {
+          "type": "source",
+          "upstream": "openspeedtest"
+        }
       }
     },
     "organizr": {
       "parent": "nginx-base",
+      "category": "Utilities",
       "tags": {
-        "latest": {"type": "pkg", "repo": "latest", "packages": ["php84"]}
+        "latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "packages": [
+            "php84"
+          ]
+        }
       }
     },
     "smokeping": {
       "parent": "nginx-base",
+      "category": "Utilities",
       "tags": {
-        "latest": {"type": "source", "upstream": null},
-        "pkg": {"type": "pkg", "repo": "quarterly", "package": "smokeping"},
-        "pkg-latest": {"type": "pkg", "repo": "latest", "package": "smokeping"}
+        "latest": {
+          "type": "source",
+          "upstream": null
+        },
+        "pkg": {
+          "type": "pkg",
+          "repo": "quarterly",
+          "package": "smokeping"
+        },
+        "pkg-latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "smokeping"
+        }
       }
     },
     "nextcloud": {
       "parent": "nginx-base",
+      "category": "Utilities",
       "tags": {
-        "latest": {"type": "pkg", "repo": "latest", "package": "nextcloud-php83"}
+        "latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "nextcloud-php83"
+        }
       }
     },
     "vaultwarden": {
       "parent": "nginx-base",
+      "category": "Utilities",
       "tags": {
-        "latest": {"type": "pkg", "repo": "latest", "package": "vaultwarden"}
+        "latest": {
+          "type": "pkg",
+          "repo": "latest",
+          "package": "vaultwarden"
+        }
       }
     },
     "mealie": {
       "parent": "base",
+      "category": "Utilities",
       "tags": {
-        "latest": {"type": "source", "upstream": "mealie", "wip": true}
+        "latest": {
+          "type": "source",
+          "upstream": "mealie",
+          "wip": true
+        }
       }
     },
     "n8n": {
       "parent": "base",
+      "category": "Utilities",
       "tags": {
-        "latest": {"type": "source", "upstream": "n8n", "wip": true}
+        "latest": {
+          "type": "source",
+          "upstream": "n8n",
+          "wip": true
+        }
       }
     },
     "overseerr": {
       "parent": "base",
+      "category": "Media Management",
       "tags": {
-        "latest": {"type": "source", "upstream": "overseerr"}
+        "latest": {
+          "type": "source",
+          "upstream": "overseerr"
+        }
       }
     },
     "unifi": {
       "parent": "base",
+      "category": "Utilities",
       "tags": {
-        "latest": {"type": "source", "upstream": "unifi"},
-        "pkg": {"type": "pkg", "repo": "quarterly", "package": "unifi-controller"}
+        "latest": {
+          "type": "source",
+          "upstream": "unifi"
+        },
+        "pkg": {
+          "type": "pkg",
+          "repo": "quarterly",
+          "package": "unifi-controller"
+        }
       }
     },
     "woodpecker": {
       "parent": "base",
+      "category": "Infrastructure",
       "tags": {
-        "latest": {"type": "source", "upstream": "woodpecker"}
+        "latest": {
+          "type": "source",
+          "upstream": "woodpecker"
+        }
       }
     }
   },

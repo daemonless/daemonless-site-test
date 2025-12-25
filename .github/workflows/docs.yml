@@ -3,6 +3,8 @@ name: Deploy Docs
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 permissions:
@@ -19,21 +21,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: daemonless-io
+
+      - uses: actions/checkout@v4
+        with:
+          repository: daemonless/daemonless
+          path: repos
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
-      - name: Install MkDocs Material
-        run: pip install mkdocs-material
+      - name: Install dependencies
+        run: |
+          pip install mkdocs-material PyYAML
+
+      - name: Sync docs
+        run: |
+          cd daemonless-io
+          python3 scripts/sync_docs.py
 
       - name: Build site
-        run: mkdocs build
+        run: |
+          cd daemonless-io
+          mkdocs build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site/
+          path: daemonless-io/site/
 
   deploy:
     needs: build

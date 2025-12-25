@@ -68,34 +68,34 @@ nav:
   - Architecture: architecture.md
   - Images:
     - Overview: images/index.md
-    - Media Management:
-      - Radarr: images/radarr.md
-      - Sonarr: images/sonarr.md
-      - Lidarr: images/lidarr.md
-      - Readarr: images/readarr.md
-      - Prowlarr: images/prowlarr.md
-      - Overseerr: images/overseerr.md
     - Downloaders:
       - SABnzbd: images/sabnzbd.md
       - Transmission: images/transmission.md
-      - Transmission-WireGuard: images/transmission-wireguard.md
+      - Transmission-Wireguard: images/transmission-wireguard.md
+    - Infrastructure:
+      - Gitea: images/gitea.md
+      - Tailscale: images/tailscale.md
+      - Traefik: images/traefik.md
+      - Woodpecker: images/woodpecker.md
+    - Media Management:
+      - Lidarr: images/lidarr.md
+      - Overseerr: images/overseerr.md
+      - Prowlarr: images/prowlarr.md
+      - Radarr: images/radarr.md
+      - Readarr: images/readarr.md
+      - Sonarr: images/sonarr.md
     - Media Servers:
       - Jellyfin: images/jellyfin.md
       - Tautulli: images/tautulli.md
-    - Infrastructure:
-      - Traefik: images/traefik.md
-      - Tailscale: images/tailscale.md
-      - Gitea: images/gitea.md
-      - Woodpecker: images/woodpecker.md
     - Utilities:
-      - Nextcloud: images/nextcloud.md
       - Mealie: images/mealie.md
       - n8n: images/n8n.md
+      - Nextcloud: images/nextcloud.md
+      - OpenSpeedTest: images/openspeedtest.md
+      - Organizr: images/organizr.md
+      - Smokeping: images/smokeping.md
       - UniFi: images/unifi.md
       - Vaultwarden: images/vaultwarden.md
-      - Organizr: images/organizr.md
-      - OpenSpeedTest: images/openspeedtest.md
-      - SmokePing: images/smokeping.md
   - Guides:
     - Permissions: guides/permissions.md
     - Networking: guides/networking.md
