@@ -27,7 +27,7 @@ def generate_mermaid(deps: dict) -> str:
     lines = [
         "```mermaid",
         "%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%",
-        "flowchart LR",
+        "flowchart TB",
         "    subgraph base_layer[\"Base Layer\"]",
         "        base[\"base<br/>s6, execline\"]",
         "    end",
