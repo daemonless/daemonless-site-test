@@ -1,6 +1,6 @@
 site_name: daemonless
 site_url: https://daemonless.io
-site_description: Native FreeBSD OCI containers - Like LinuxServer.io, but for FreeBSD
+site_description: Native FreeBSD OCI Containers - Jails without the System Administration
 repo_url: https://github.com/daemonless/daemonless
 repo_name: daemonless/daemonless
 

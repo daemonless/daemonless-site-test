@@ -1,6 +1,6 @@
 # daemonless
 
-**Native FreeBSD OCI containers** — Like [LinuxServer.io](https://linuxserver.io), but for FreeBSD.
+**Native FreeBSD OCI Containers** — Jails without the System Administration.
 
 Production-ready container images using Podman and ocijail.
 
