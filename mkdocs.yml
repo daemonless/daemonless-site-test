@@ -34,6 +34,9 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/daemonless
 
+extra_css:
+  - stylesheets/extra.css
+
 extra_javascript:
   - https://unpkg.com/mermaid@10/dist/mermaid.min.js
 

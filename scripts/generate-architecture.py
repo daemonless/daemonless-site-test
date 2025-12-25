@@ -26,9 +26,10 @@ def generate_mermaid(deps: dict) -> str:
     """Generate Mermaid flowchart from dependencies."""
     lines = [
         "```mermaid",
-        "flowchart TB",
+        "%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%",
+        "flowchart LR",
         "    subgraph base_layer[\"Base Layer\"]",
-        "        base[\"base<br/><small>s6, execline</small>\"]",
+        "        base[\"base<br/>s6, execline\"]",
         "    end",
         "",
     ]
