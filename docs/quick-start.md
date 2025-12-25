@@ -1,0 +1,97 @@
+# Quick Start
+
+Get daemonless containers running on FreeBSD in 5 minutes.
+
+## Prerequisites
+
+Install Podman and ocijail:
+
+```bash
+pkg install podman ocijail
+```
+
+!!! note
+    For .NET apps (Radarr, Sonarr, etc.), you'll need the patched ocijail.
+    See [ocijail patch](guides/ocijail-patch.md).
+
+## Host Configuration
+
+### 1. Enable pf filtering
+
+```bash
+sysctl net.pf.filter_local=1
+echo 'net.pf.filter_local=1' >> /etc/sysctl.conf
+```
+
+### 2. Mount fdescfs
+
+```bash
+mount -t fdescfs fdesc /dev/fd
+echo 'fdesc /dev/fd fdescfs rw 0 0' >> /etc/fstab
+```
+
+### 3. Configure pf.conf
+
+Add to `/etc/pf.conf`:
+
+```
+# Podman container networking
+rdr-anchor "cni-rdr/*"
+nat-anchor "cni-rdr/*"
+table <cni-nat>
+nat on $ext_if inet from <cni-nat> to any -> ($ext_if)
+nat on $ext_if inet from 10.88.0.0/16 to any -> ($ext_if)
+```
+
+Reload pf:
+
+```bash
+pfctl -f /etc/pf.conf
+```
+
+### 4. Enable Podman service
+
+```bash
+sysrc podman_enable=YES
+service podman start
+```
+
+## Run Your First Container
+
+```bash
+# Tautulli - no special annotations needed
+podman run -d --name tautulli \
+  -p 8181:8181 \
+  -e PUID=1000 -e PGID=1000 \
+  -v /data/config/tautulli:/config \
+  ghcr.io/daemonless/tautulli:latest
+```
+
+Check it's running:
+
+```bash
+podman ps
+podman logs -f tautulli
+```
+
+Access at: `http://localhost:8181`
+
+## .NET Apps (Radarr, Sonarr, etc.)
+
+These require the `allow.mlock` annotation:
+
+```bash
+podman run -d --name radarr \
+  -p 7878:7878 \
+  --annotation 'org.freebsd.jail.allow.mlock=true' \
+  -e PUID=1000 -e PGID=1000 \
+  -v /data/config/radarr:/config \
+  ghcr.io/daemonless/radarr:latest
+```
+
+## Next Steps
+
+- [Available Images](images/index.md) — Full image catalog
+- [Permissions](guides/permissions.md) — Understanding PUID/PGID
+- [Networking](guides/networking.md) — Port forwarding vs host network
+- [Command Generator](generator.md) — Interactive config builder
