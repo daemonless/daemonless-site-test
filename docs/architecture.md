@@ -6,7 +6,7 @@ How daemonless container images are structured and built.
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%
-flowchart TB 
+flowchart LR
     subgraph base_layer["Base Layer"]
         base["base<br/>s6, execline"]
     end
