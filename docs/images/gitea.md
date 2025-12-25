@@ -2,8 +2,6 @@
 
 Self-hosted Git service.
 
-**Note:** Gitea dropped FreeBSD binary releases in v1.25.x. This image uses the FreeBSD package (`pkg install gitea`).
-
 | | |
 |---|---|
 | **Port** | 3000 |

@@ -24,11 +24,6 @@ jobs:
         with:
           path: daemonless-io
 
-      - uses: actions/checkout@v4
-        with:
-          repository: daemonless/daemonless
-          path: repos
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -36,6 +31,11 @@ jobs:
       - name: Install dependencies
         run: |
           pip install mkdocs-material PyYAML
+
+      - name: Fetch repositories
+        run: |
+          cd daemonless-io
+          python3 scripts/fetch_repos.py
 
       - name: Sync docs
         run: |
