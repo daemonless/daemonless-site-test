@@ -1,60 +1,112 @@
 #!/usr/bin/env python3
 """
-Generate Mermaid diagram from dependencies.json
+Generate Mermaid diagram from Containerfile analysis.
 
 Usage:
     python3 scripts/generate-architecture.py > docs/architecture.md
     python3 scripts/generate-architecture.py --mermaid-only  # Just the diagram
 """
 
-import json
+import re
 import sys
 from pathlib import Path
 
-def load_dependencies(path: str = "dependencies.json") -> dict:
-    """Load dependencies.json from repo root or specified path."""
-    # Try multiple locations
-    for p in [path, f"../{path}", f"../../daemonless/{path}"]:
-        try:
-            with open(p) as f:
-                return json.load(f)
-        except FileNotFoundError:
-            continue
-    raise FileNotFoundError(f"Could not find {path}")
+REPO_ROOT = Path(__file__).parent.parent
+REPOS_DIR = REPO_ROOT.parent / "repos"
 
-def generate_mermaid(deps: dict) -> str:
-    """Generate Mermaid flowchart from dependencies."""
+# Base images (not app images)
+BASE_IMAGES = {"base", "arr-base", "nginx-base"}
+
+
+def parse_containerfile(containerfile: Path) -> dict:
+    """Parse FROM and labels from a Containerfile."""
+    result = {"parent": "base", "base_label": None}
+
+    if not containerfile.exists():
+        return result
+
+    content = containerfile.read_text()
+
+    # Find FROM ghcr.io/daemonless/<parent>
+    from_match = re.search(r"FROM\s+ghcr\.io/daemonless/([^:\s]+)", content)
+    if from_match:
+        result["parent"] = from_match.group(1)
+
+    # Find io.daemonless.base label (e.g., base="nginx")
+    base_match = re.search(r'io\.daemonless\.base="([^"]+)"', content)
+    if base_match:
+        result["base_label"] = base_match.group(1)
+
+    # Find io.daemonless.wip label
+    if re.search(r'io\.daemonless\.wip="true"', content):
+        result["wip"] = True
+
+    return result
+
+
+def discover_images() -> dict:
+    """Scan repos and determine parent relationships."""
+    images = {}
+
+    if not REPOS_DIR.exists():
+        return images
+
+    for repo_path in sorted(REPOS_DIR.iterdir()):
+        if not repo_path.is_dir():
+            continue
+
+        name = repo_path.name
+        containerfile = repo_path / "Containerfile"
+
+        if not containerfile.exists():
+            continue
+
+        info = parse_containerfile(containerfile)
+
+        # Skip WIP images
+        if info.get("wip"):
+            continue
+
+        # Determine effective parent
+        parent = info["parent"]
+
+        # If base_label is "nginx", it means nginx-base
+        if info["base_label"] == "nginx":
+            parent = "nginx-base"
+
+        # arr-base children are detected by FROM line
+        # nginx-base children are detected by base label or FROM line
+
+        images[name] = {"parent": parent}
+
+    return images
+
+
+def generate_mermaid(images: dict) -> str:
+    """Generate Mermaid flowchart from image relationships."""
     lines = [
         "```mermaid",
         "%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%",
-        "flowchart TB",
+        "flowchart LR",
         "    subgraph base_layer[\"Base Layer\"]",
-        "        base[\"base<br/>s6, execline\"]",
+        '        base["base<br/>s6, execline"]',
+        "    end",
+        "",
+        "    subgraph intermediate[\"Intermediate Layers\"]",
+        '        arr-base["arr-base<br/><small>sqlite3, icu, .NET</small>"]',
+        '        nginx-base["nginx-base<br/><small>nginx</small>"]',
         "    end",
         "",
     ]
 
-    # Intermediate layers
-    lines.append("    subgraph intermediate[\"Intermediate Layers\"]")
-
-    base_images = deps.get("base_images", {})
-    for name, info in base_images.items():
-        if name == "base":
-            continue
-        packages = ", ".join(info.get("packages", [])[:3])
-        if len(info.get("packages", [])) > 3:
-            packages += "..."
-        lines.append(f'        {name}["{name}<br/><small>{packages}</small>"]')
-
-    lines.append("    end")
-    lines.append("")
-
-    # Application layers grouped by parent
+    # Group apps by parent
     arr_apps = []
     nginx_apps = []
     base_apps = []
 
-    for name, info in deps.get("images", {}).items():
+    for name, info in images.items():
+        if name in BASE_IMAGES:
+            continue
         parent = info.get("parent", "base")
         if parent == "arr-base":
             arr_apps.append(name)
@@ -65,7 +117,7 @@ def generate_mermaid(deps: dict) -> str:
 
     # Arr apps subgraph
     if arr_apps:
-        lines.append("    subgraph arr_apps[\".NET Apps\"]")
+        lines.append('    subgraph arr_apps[".NET Apps"]')
         for app in sorted(arr_apps):
             lines.append(f'        {app}["{app}"]')
         lines.append("    end")
@@ -73,7 +125,7 @@ def generate_mermaid(deps: dict) -> str:
 
     # Nginx apps subgraph
     if nginx_apps:
-        lines.append("    subgraph nginx_apps[\"Nginx Apps\"]")
+        lines.append('    subgraph nginx_apps["Nginx Apps"]')
         for app in sorted(nginx_apps):
             lines.append(f'        {app}["{app}"]')
         lines.append("    end")
@@ -81,7 +133,7 @@ def generate_mermaid(deps: dict) -> str:
 
     # Base apps subgraph
     if base_apps:
-        lines.append("    subgraph base_apps[\"Direct Apps\"]")
+        lines.append('    subgraph base_apps["Direct Apps"]')
         for app in sorted(base_apps):
             lines.append(f'        {app}["{app}"]')
         lines.append("    end")
@@ -111,15 +163,45 @@ def generate_mermaid(deps: dict) -> str:
     lines.append("    class arr-base,nginx-base intermediateStyle")
 
     all_apps = arr_apps + nginx_apps + base_apps
-    lines.append(f"    class {','.join(all_apps)} appStyle")
+    if all_apps:
+        lines.append(f"    class {','.join(all_apps)} appStyle")
 
     lines.append("```")
 
     return "\n".join(lines)
 
-def generate_page(deps: dict) -> str:
+
+def generate_page(images: dict) -> str:
     """Generate full architecture page with mermaid diagram."""
-    mermaid = generate_mermaid(deps)
+    mermaid = generate_mermaid(images)
+
+    # Build dynamic inheritance tree
+    arr_apps = []
+    nginx_apps = []
+    base_apps = []
+
+    for name, info in images.items():
+        if name in BASE_IMAGES:
+            continue
+        parent = info.get("parent", "base")
+        if parent == "arr-base":
+            arr_apps.append(name)
+        elif parent == "nginx-base":
+            nginx_apps.append(name)
+        else:
+            base_apps.append(name)
+
+    arr_tree = "\n".join(f"    │   ├── {app}" for app in sorted(arr_apps)[:-1])
+    if arr_apps:
+        arr_tree += f"\n    │   └── {sorted(arr_apps)[-1]}"
+
+    nginx_tree = "\n".join(f"    │   ├── {app}" for app in sorted(nginx_apps)[:-1])
+    if nginx_apps:
+        nginx_tree += f"\n    │   └── {sorted(nginx_apps)[-1]}"
+
+    base_tree = "\n".join(f"    ├── {app}" for app in sorted(base_apps)[:-1])
+    if base_apps:
+        base_tree += f"\n    └── {sorted(base_apps)[-1]}"
 
     page = f"""# Architecture
 
@@ -163,50 +245,35 @@ When a base image changes, dependent images must be rebuilt:
 2. **arr-base** changes → rebuild *arr apps only
 3. **nginx-base** changes → rebuild nginx apps only
 
-This is handled automatically by the [cascade rebuild workflow](https://github.com/daemonless/daemonless/blob/main/.github/workflows/trigger-cascade.yml).
-
 ## Image Inheritance
 
 ```
 FreeBSD 15 Base
 └── base (s6, execline)
     ├── arr-base (sqlite3, icu, .NET compat)
-    │   ├── radarr
-    │   ├── sonarr
-    │   ├── prowlarr
-    │   ├── lidarr
-    │   └── readarr
+{arr_tree}
     ├── nginx-base (nginx)
-    │   ├── nextcloud
-    │   ├── organizr
-    │   ├── openspeedtest
-    │   ├── smokeping
-    │   └── vaultwarden
-    ├── transmission
-    ├── tautulli
-    ├── sabnzbd
-    ├── jellyfin
-    ├── gitea
-    ├── traefik
-    ├── tailscale
-    ├── overseerr
-    ├── mealie
-    ├── n8n
-    ├── unifi
-    └── woodpecker
+{nginx_tree}
+{base_tree}
 ```
 """
     return page
 
+
 def main():
     mermaid_only = "--mermaid-only" in sys.argv
 
-    deps = load_dependencies()
+    images = discover_images()
+
+    if not images:
+        print("No images found. Run fetch_repos.py first.", file=sys.stderr)
+        sys.exit(1)
 
     if mermaid_only:
-        print(generate_mermaid(deps))
+        print(generate_mermaid(images))
     else:
-        print(generate_page(deps))
+        print(generate_page(images))
+
 
 if __name__ == "__main__":
     main()

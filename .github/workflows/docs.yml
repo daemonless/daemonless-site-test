@@ -26,13 +26,15 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.x"
 
       - name: Install dependencies
         run: |
           pip install mkdocs-material PyYAML
 
       - name: Fetch repositories
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           cd daemonless-io
           python3 scripts/fetch_repos.py
