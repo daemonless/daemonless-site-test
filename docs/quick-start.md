@@ -78,7 +78,7 @@ Access at: `http://localhost:8181`
 
 ## .NET Apps (Radarr, Sonarr, etc.)
 
-These require the `allow.mlock` annotation:
+These require the `allow.mlock` annotation and patched ocijail:
 
 ```bash
 podman run -d --name radarr \
@@ -88,6 +88,16 @@ podman run -d --name radarr \
   -v /data/config/radarr:/config \
   ghcr.io/daemonless/radarr:latest
 ```
+
+## Optional: ZFS Storage
+
+If you're using ZFS, configure Podman to use it for proper copy-on-write layering and snapshot support:
+
+```bash
+zfs create -o mountpoint=/var/db/containers/storage zroot/podman
+```
+
+See [ZFS Storage](guides/zfs.md) for the required `storage.conf` configuration.
 
 ## Next Steps
 

@@ -1,34 +1,6 @@
 # ZFS Storage
 
-Configure Podman to use ZFS on FreeBSD for container storage.
-
-## Default Storage
-
-By default, Podman uses `/var/db/containers` with the vfs storage driver.
-
-## Configure ZFS Driver
-
-Edit `/usr/local/etc/containers/storage.conf`:
-
-```toml
-[storage]
-driver = "zfs"
-graphroot = "/var/db/containers/storage"
-
-[storage.options.zfs]
-mountopt = "nodev"
-```
-
-## Create ZFS Dataset
-
-```bash
-# Create dataset for container storage
-zfs create zroot/containers
-zfs set mountpoint=/var/db/containers/storage zroot/containers
-
-# Optional: enable compression
-zfs set compression=lz4 zroot/containers
-```
+Configure Podman to use ZFS on FreeBSD for optimal container storage.
 
 ## Benefits
 
@@ -38,6 +10,45 @@ zfs set compression=lz4 zroot/containers
 | Snapshots | Easy backup/restore |
 | Compression | Smaller storage footprint |
 | Checksums | Data integrity |
+
+## Create ZFS Dataset
+
+Create a dedicated dataset for container storage:
+
+```bash
+# Create dataset (adjust 'zroot' to your pool name)
+zfs create zroot/containers
+zfs set mountpoint=/var/db/containers/storage zroot/containers
+```
+
+## Configure Podman
+
+Edit `/usr/local/etc/containers/storage.conf`:
+
+```toml
+[storage]
+driver = "zfs"
+runroot = "/var/run/containers/storage"
+graphroot = "/var/db/containers/storage"
+
+[storage.options.zfs]
+mountopt = "nodev"
+```
+
+## Verify Configuration
+
+```bash
+podman info | grep -A 5 "store"
+```
+
+Expected output:
+
+```
+graphDriverName: zfs
+graphRoot: /var/db/containers/storage
+graphStatus:
+  Dataset: zroot/containers
+```
 
 ## Separate Config Storage
 
@@ -53,10 +64,17 @@ zfs snapshot zroot/data/config@before-upgrade
 
 ## Troubleshooting
 
+### "driver zfs is not supported"
+
+Ensure:
+
+1. Your ZFS pool is imported and healthy
+2. The `graphroot` directory exists and is a ZFS dataset
+3. You are running Podman as root
+
 ### Permission Issues
 
 ```bash
-# Ensure correct ownership
 chown -R root:wheel /var/db/containers
 ```
 

@@ -1,14 +1,28 @@
 # Networking
 
-FreeBSD Podman supports two networking modes for containers.
+FreeBSD Podman containers support several networking modes. Understanding which one to use is critical for connectivity and performance.
 
-## Port Forwarding (Recommended)
+## Bridge Networking (Default)
+
+The container gets its own IP address on a virtual network (usually `10.88.0.0/16`).
+
+### Port Forwarding
 
 ```bash
 podman run -d -p 7878:7878 --name radarr ghcr.io/daemonless/radarr:latest
 ```
 
 Maps container port to host port. Requires pf configuration.
+
+### Multiple Ports
+
+```bash
+podman run -d \
+  -p 80:80 \
+  -p 443:443 \
+  -p 8080:8080 \
+  --name traefik ghcr.io/daemonless/traefik:latest
+```
 
 ### pf.conf Setup
 
@@ -31,23 +45,22 @@ echo 'net.pf.filter_local=1' >> /etc/sysctl.conf
 pfctl -f /etc/pf.conf
 ```
 
-### Multiple Ports
+## Host Networking
+
+The container shares the host's network stack directly. No separate IP address.
 
 ```bash
-podman run -d \
-  -p 80:80 \
-  -p 443:443 \
-  -p 8080:8080 \
-  --name traefik ghcr.io/daemonless/traefik:latest
+podman run -d --network=host --name unifi ghcr.io/daemonless/unifi:latest
 ```
 
-## Host Network
+### Use Cases
 
-```bash
-podman run -d --network=host --name radarr ghcr.io/daemonless/radarr:latest
-```
+- Applications needing L2 network discovery (UniFi adopting APs, SmokePing)
+- Avoiding NAT overhead
+- Simpler setup without pf configuration
 
-Container shares the host's network namespace directly.
+!!! note
+    Port mapping (`-p`) has no effect in host mode; the application listens on the host IP directly.
 
 | Pros | Cons |
 |------|------|
@@ -55,10 +68,40 @@ Container shares the host's network namespace directly.
 | No pf config needed | Port conflicts possible |
 | Better performance | Container sees all host interfaces |
 
+## VNET (Virtual Network Stack)
+
+VNET provides a private, isolated network stack for the jail.
+
+```bash
+podman run -d --name gitea \
+  --annotation 'org.freebsd.jail.vnet=new' \
+  ghcr.io/daemonless/gitea:latest
+```
+
+### Use Cases
+
+- Applications managing their own network interfaces or routing (WireGuard, Gitea)
+- Higher isolation than bridge mode
+
+### Limitations
+
+- **Port Forwarding:** Standard `-p` mapping not supported by stock ocijail with VNET. Access via container's internal IP.
+- **Kernel Support:** Requires VNET support (default in FreeBSD 13+).
+
 ## Container-to-Container
 
-Containers on the default bridge network can communicate via IP. Use `podman inspect` to find container IPs:
+Containers on the default bridge network can communicate via IP:
 
 ```bash
 podman inspect -f '{{.NetworkSettings.IPAddress}}' radarr
 ```
+
+## Comparison Summary
+
+| Feature | Bridge (Default) | Host | VNET |
+|---------|------------------|------|------|
+| **IP Address** | Private (10.88.x.x) | Shared with Host | Private (10.88.x.x) |
+| **Port Mapping** | Supported (`-p`) | Not needed | Not supported |
+| **Isolation** | High | Low | Very High |
+| **Best For** | Most Apps | Network Discovery | VPNs / High Isolation |
+| **pf Required** | Yes | No | Yes |

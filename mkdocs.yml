@@ -102,4 +102,6 @@ nav:
     - Logging: guides/logging.md
     - ZFS Storage: guides/zfs.md
     - ocijail Patch: guides/ocijail-patch.md
+    - Init System: guides/init-system.md
+    - Labels: guides/labels.md
   - Command Generator: generator.md
