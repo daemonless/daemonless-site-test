@@ -7,10 +7,10 @@ Get daemonless containers running on FreeBSD in 5 minutes.
 Install Podman and ocijail:
 
 ```bash
-pkg install podman ocijail
+pkg install podman-suite
 ```
 
-!!! note
+!!! warning
     For .NET apps (Radarr, Sonarr, etc.), you'll need the patched ocijail.
     See [ocijail patch](guides/ocijail-patch.md).
 

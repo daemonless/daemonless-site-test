@@ -16,7 +16,23 @@ The stock ocijail runtime doesn't provide a way to pass generic `allow.*` flags 
 
 ## Installation
 
-### Option 1: Automated Script (Recommended)
+### Option 1: Manual Ports Method
+
+```bash
+# Fetch patch
+fetch  https://raw.githubusercontent.com/daemonless/daemonless/refs/heads/main/scripts/ocijail-allow-annotations.patch -o /tmp
+mkdir -p /usr/ports/sysutils/ocijail/files 
+# Copy patch to port's files directory
+cp /tmp/ocijail-allow-annotations.patch /usr/ports/sysutils/ocijail/files/patch-daemonless-annotations
+
+# Rebuild and install
+cd /usr/ports/sysutils/ocijail
+make reinstall clean
+# Remove patch
+rm /usr/ports/sysutils/ocijail/files/patch-daemonless-annotations
+```
+
+### Option 2: Automated Script
 
 ```bash
 git clone https://github.com/daemonless/daemonless.git
@@ -31,7 +47,7 @@ The script will:
 3. Build using the ports framework or bazel
 4. Back up original and install patched version to `/usr/local/bin/ocijail`
 
-### Option 2: Manual Build
+### Option 3: Manual Build
 
 ```bash
 # Requires bazel and git
@@ -50,17 +66,6 @@ bazel build //...
 # Install (backs up original)
 cp /usr/local/bin/ocijail /usr/local/bin/ocijail.orig
 cp bazel-bin/ocijail /usr/local/bin/ocijail
-```
-
-### Option 3: Manual Ports Method
-
-```bash
-# Copy patch to port's files directory
-cp scripts/ocijail-allow-annotations.patch /usr/ports/sysutils/ocijail/files/patch-daemonless-annotations
-
-# Rebuild and install
-cd /usr/ports/sysutils/ocijail
-make reinstall clean
 ```
 
 ## Usage
