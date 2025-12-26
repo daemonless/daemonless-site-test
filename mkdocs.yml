@@ -106,5 +106,7 @@ nav:
       - ocijail Patch: guides/ocijail-patch.md
       - Init System: guides/init-system.md
       - Labels: guides/labels.md
+      - Operations: guides/operations.md
       - Development: guides/development.md
+
   - Command Generator: generator.md
