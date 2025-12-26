@@ -2,7 +2,7 @@
 
 **Native FreeBSD OCI Containers** — Jails without the System Administration.
 
-Production-ready container images using Podman and ocijail.
+Production-ready container images using Podman and ocijail. [Read our Philosophy :material-arrow-right:](philosophy.md)
 
 ## Features
 

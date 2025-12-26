@@ -30,6 +30,9 @@ theme:
     repo: fontawesome/brands/github
 
 extra:
+  analytics:
+    provider: google
+    property: G-Z0TYZ35R6G
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/daemonless
@@ -66,6 +69,7 @@ plugins:
 
 nav:
   - Home: index.md
+  - Philosophy: philosophy.md
   - Quick Start: quick-start.md
   - Architecture: architecture.md
   - Images:
