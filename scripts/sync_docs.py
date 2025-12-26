@@ -188,18 +188,33 @@ def process_image(name: str, config: dict):
     if "ocijail" in notes.lower() or "mlock" in notes.lower():
         new_content.append('!!! warning "Requires patched ocijail"\n    This application requires the `allow.mlock` annotation.\n    See [ocijail patch](../guides/ocijail-patch.md).\n')
 
-    # Quick Start
+    # Deployment Tabs (Quick Start, Compose, Ansible)
+    tabs = []
+    
     if "quick start" in sections:
-        new_content.append("## Quick Start\n")
-        new_content.append(sections["quick start"] + "\n")
-
-    # Podman Compose
+        content_qs = sections["quick start"]
+        # Indent content
+        content_qs = "\n".join("    " + line for line in content_qs.splitlines())
+        tabs.append(f'=== "Podman CLI"\n\n{content_qs}\n')
+        
     if "podman-compose" in sections:
-        new_content.append("## podman-compose\n")
-        new_content.append(sections["podman-compose"] + "\n")
+        content_pc = sections["podman-compose"]
+        content_pc = "\n".join("    " + line for line in content_pc.splitlines())
+        tabs.append(f'=== "Compose"\n\n{content_pc}\n')
     elif "docker-compose" in sections:
-        new_content.append("## podman-compose\n")
-        new_content.append(sections["docker-compose"] + "\n")
+        content_dc = sections["docker-compose"]
+        content_dc = "\n".join("    " + line for line in content_dc.splitlines())
+        tabs.append(f'=== "Compose"\n\n{content_dc}\n')
+
+    if "ansible" in sections:
+        content_ans = sections["ansible"]
+        content_ans = "\n".join("    " + line for line in content_ans.splitlines())
+        tabs.append(f'=== "Ansible"\n\n{content_ans}\n')
+
+    if tabs:
+        new_content.append("## Quick Start\n")
+        new_content.append("\n".join(tabs))
+
 
     # Environment Variables
     if "environment variables" in sections:
