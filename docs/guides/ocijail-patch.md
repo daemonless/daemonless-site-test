@@ -4,6 +4,11 @@
 
 ## Why This Is Needed
 
+!!! note "Upcoming Native Support (OCI v1.3.0)"
+    **Good News:** The `allow.*` parameters required for .NET/Postgres have been accepted into the **OCI Runtime Specification v1.3.0**.
+    
+    Support is currently being implemented in `ocijail` by the upstream maintainer. Once released, this manual patching process will become obsolete.
+
 FreeBSD jails have `allow.*` parameters controlling permitted operations. Some applications require specific permissions:
 
 | Parameter | Required By | Purpose |

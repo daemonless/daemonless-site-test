@@ -11,7 +11,7 @@ pkg install podman-suite
 ```
 
 !!! warning
-    For .NET apps (Radarr, Sonarr, etc.), you'll need the patched ocijail.
+    Currently, a temporary patch for ocijail is required for .NET applications (Radarr/Sonarr). This will be removed in a future update once OCI v1.3.0 support lands upstream.
     See [ocijail patch](guides/ocijail-patch.md).
 
 ## Host Configuration
