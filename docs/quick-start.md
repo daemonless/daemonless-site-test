@@ -94,7 +94,7 @@ podman run -d --name radarr \
 If you're using ZFS, configure Podman to use it for proper copy-on-write layering and snapshot support:
 
 ```bash
-zfs create -o mountpoint=/var/db/containers/storage zroot/podman
+zfs create -o mountpoint=/var/db/containers/storage <pool>/podman
 ```
 
 See [ZFS Storage](guides/zfs.md) for the required `storage.conf` configuration.
