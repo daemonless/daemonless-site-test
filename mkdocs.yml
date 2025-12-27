@@ -112,5 +112,6 @@ nav:
       - Labels: guides/labels.md
       - Operations: guides/operations.md
       - Development: guides/development.md
+      - OCI Compliance: guides/oci-compliance.md
 
   - Command Generator: generator.md
