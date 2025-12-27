@@ -49,6 +49,7 @@ All images are available at `ghcr.io/daemonless/<image>`.
 | [Organizr](organizr.md) | 80 | Service dashboard |
 | [OpenSpeedTest](openspeedtest.md) | 3000 | Network speed test |
 | [SmokePing](smokeping.md) | 80 | Network latency monitoring |
+| [Uptime Kuma](uptime-kuma.md) | 3001 | Website monitoring |
 
 ## Image Tags
 
