@@ -85,6 +85,28 @@ Work with the upstream Podman/FreeBSD team to allow mapping CLI flags or `contai
 2.  **Patch:** Review the current `ocijail` patch to ensure it doesn't *conflict* with upcoming native support.
 3.  **Testing:** Once an upstream `ocijail` beta with v1.3.0 support lands, verify our images work without modification (using manually crafted `config.json`).
 
-## 6. Conclusion
+## 6. Image Labels & Metadata
+
+Daemonless images already strictly adhere to the [OCI Image Specification](https://github.com/opencontainers/image-spec) for static labels.
+
+### Current Status: Good
+
+We correctly use standard namespaces:
+*   `org.opencontainers.image.title`
+*   `org.opencontainers.image.source`
+*   `org.opencontainers.image.licenses`
+*   `io.daemonless.*` (Custom namespace for specific metadata)
+
+### Recommendation: Add Dynamic Labels
+
+To reach "Gold Standard" compliance, the build pipeline (`build.sh`) should be updated to inject dynamic build-time metadata:
+
+*   `org.opencontainers.image.created`: RFC 3339 date/time of the build.
+*   `org.opencontainers.image.revision`: Git commit SHA of the source code.
+*   `org.opencontainers.image.version`: The semantic version of the packaged application.
+
+This allows tools (like Renovate, Watchtower, or generic OCI scanners) to better understand the image lineage without pulling it.
+
+## 7. Conclusion
 
 Daemonless is effectively compliant because it produces standard OCI images. The burden of v1.3.0 compliance lies with the runtime tools (`ocijail`, `podman`). We will continue to ship our compatibility patch until the upstream toolchain fully matures to support the new specification end-to-end.
