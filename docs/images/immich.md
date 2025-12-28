@@ -12,10 +12,11 @@ Native FreeBSD port of [Immich](https://immich.app/) - the self-hosted photo and
 ## Prerequisites
 
 ```bash
-pkg install podman-suite cni-dnsname
+pkg install podman-suite cni-dnsname py311-podman-compose
 ```
 
-The `cni-dnsname` package enables DNS resolution between containers, required for the Immich services to communicate.
+- `cni-dnsname` enables DNS resolution between containers
+- `py311-podman-compose` runs the compose file
 
 ## Quick Start
 
@@ -69,13 +70,12 @@ This stack is composed of the following specialized FreeBSD containers:
 
 The stack relies on the standard Immich `.env` file. Key variables include:
 
-| Variable | Description | Default |
+| Variable | Description | Example |
 |----------|-------------|---------|
-| `UPLOAD_LOCATION` | Path on host to store photos/videos | `./library` |
-| `DB_PASSWORD` | PostgreSQL password | `postgres` |
+| `UPLOAD_LOCATION` | **Absolute path** to store photos/videos | `/containers/immich/library` |
+| `DB_PASSWORD` | PostgreSQL password | `changeme` |
 | `DB_USERNAME` | PostgreSQL user | `postgres` |
 | `DB_DATABASE_NAME` | PostgreSQL database name | `immich` |
-| `IMMICH_MACHINE_LEARNING_URL` | URL to ML service | *Required if external* |
 
 ## Ports
 
