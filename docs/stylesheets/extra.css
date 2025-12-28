@@ -1,3 +1,18 @@
+/* Custom primary color to match logo pitchfork (#e24543) */
+:root {
+  --md-primary-fg-color: #e24543;
+  --md-primary-fg-color--light: #e86563;
+  --md-primary-fg-color--dark: #c93a38;
+  --md-accent-fg-color: #e24543;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #e24543;
+  --md-primary-fg-color--light: #e86563;
+  --md-primary-fg-color--dark: #c93a38;
+  --md-accent-fg-color: #e24543;
+}
+
 /* Make Mermaid diagrams larger */
 .mermaid {
   width: 100%;
