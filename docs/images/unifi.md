@@ -6,7 +6,7 @@ UniFi Network Application for managing Ubiquiti network devices.
 |---|---|
 | **Port** | 8443 |
 | **Registry** | `ghcr.io/daemonless/unifi` |
-| **Tags** | `:latest`, `:pkg` |
+| **Tags** | `:latest`, `:pkg`, `:pkg-latest` |
 | **Source** | [github.com/daemonless/unifi](https://github.com/daemonless/unifi) |
 
 !!! warning "Requires patched ocijail"
@@ -15,35 +15,37 @@ UniFi Network Application for managing Ubiquiti network devices.
 
 ## Quick Start
 
-```bash
-podman run -d --name unifi \
-  --annotation 'org.freebsd.jail.allow.mlock=true' \
-  --network host \
-  -e PUID=1000 -e PGID=1000 \
-  -v /path/to/config:/config \
-  ghcr.io/daemonless/unifi:latest
-```
+=== "Podman CLI"
 
-Access at: https://localhost:8443
+    ```bash
+    podman run -d --name unifi \
+      --annotation 'org.freebsd.jail.allow.mlock=true' \
+      --network host \
+      -e PUID=1000 -e PGID=1000 \
+      -v /path/to/config:/config \
+      ghcr.io/daemonless/unifi:latest
+    ```
+    
+    Access at: https://localhost:8443
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  unifi:
-    image: ghcr.io/daemonless/unifi:latest
-    container_name: unifi
-    network_mode: host
-    annotations:
-      org.freebsd.jail.allow.mlock: "true"
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /data/config/unifi:/config
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      unifi:
+        image: ghcr.io/daemonless/unifi:latest
+        container_name: unifi
+        network_mode: host
+        annotations:
+          org.freebsd.jail.allow.mlock: "true"
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+        volumes:
+          - /data/config/unifi:/config
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 

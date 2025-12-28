@@ -11,34 +11,36 @@ HTPC/Homelab Services Organizer - dashboard for all your self-hosted services.
 
 ## Quick Start
 
-```bash
-podman run -d --name organizr \
-  -p 80:80 \
-  -e PUID=1000 -e PGID=1000 \
-  -v /path/to/config:/config \
-  ghcr.io/daemonless/organizr:latest
-```
+=== "Podman CLI"
 
-Access at: http://localhost
+    ```bash
+    podman run -d --name organizr \
+      -p 80:80 \
+      -e PUID=1000 -e PGID=1000 \
+      -v /path/to/config:/config \
+      ghcr.io/daemonless/organizr:latest
+    ```
+    
+    Access at: http://localhost
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  organizr:
-    image: ghcr.io/daemonless/organizr:latest
-    container_name: organizr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-      - BRANCH=v2-master
-    volumes:
-      - /data/config/organizr:/config
-    ports:
-      - 80:80
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      organizr:
+        image: ghcr.io/daemonless/organizr:latest
+        container_name: organizr
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+          - BRANCH=v2-master
+        volumes:
+          - /data/config/organizr:/config
+        ports:
+          - 80:80
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 

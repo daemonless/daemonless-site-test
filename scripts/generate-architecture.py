@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent
-REPOS_DIR = REPO_ROOT.parent / "repos"
+REPOS_DIR = REPO_ROOT.parent
 
 # Base images (not app images)
 BASE_IMAGES = {"base", "arr-base", "nginx-base"}

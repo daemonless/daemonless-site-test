@@ -15,40 +15,42 @@ Music collection manager for Usenet and BitTorrent users.
 
 ## Quick Start
 
-```bash
-podman run -d --name lidarr \
-  -p 8686:8686 \
-  --annotation 'org.freebsd.jail.allow.mlock=true' \
-  -e PUID=1000 -e PGID=1000 \
-  -v /path/to/config:/config \
-  -v /path/to/music:/music \
-  -v /path/to/downloads:/downloads \
-  ghcr.io/daemonless/lidarr:latest
-```
+=== "Podman CLI"
 
-Access at: http://localhost:8686
+    ```bash
+    podman run -d --name lidarr \
+      -p 8686:8686 \
+      --annotation 'org.freebsd.jail.allow.mlock=true' \
+      -e PUID=1000 -e PGID=1000 \
+      -v /path/to/config:/config \
+      -v /path/to/music:/music \
+      -v /path/to/downloads:/downloads \
+      ghcr.io/daemonless/lidarr:latest
+    ```
+    
+    Access at: http://localhost:8686
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  lidarr:
-    image: ghcr.io/daemonless/lidarr:latest
-    container_name: lidarr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /data/config/lidarr:/config
-      - /data/media/music:/music
-      - /data/downloads:/downloads
-    ports:
-      - 8686:8686
-    annotations:
-      org.freebsd.jail.allow.mlock: "true"
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      lidarr:
+        image: ghcr.io/daemonless/lidarr:latest
+        container_name: lidarr
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+        volumes:
+          - /data/config/lidarr:/config
+          - /data/media/music:/music
+          - /data/downloads:/downloads
+        ports:
+          - 8686:8686
+        annotations:
+          org.freebsd.jail.allow.mlock: "true"
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 

@@ -11,33 +11,35 @@ Bitwarden compatible backend server written in Rust, running natively on FreeBSD
 
 ## Quick Start
 
-```bash
-podman run -d --name vaultwarden \
-  -p 80:80 \
-  -e PUID=1000 -e PGID=1000 \
-  -v /path/to/config:/config \
-  ghcr.io/daemonless/vaultwarden:latest
-```
+=== "Podman CLI"
 
-Access at: http://localhost
+    ```bash
+    podman run -d --name vaultwarden \
+      -p 80:80 \
+      -e PUID=1000 -e PGID=1000 \
+      -v /path/to/config:/config \
+      ghcr.io/daemonless/vaultwarden:latest
+    ```
+    
+    Access at: http://localhost
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  vaultwarden:
-    image: ghcr.io/daemonless/vaultwarden:latest
-    container_name: vaultwarden
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /data/config/vaultwarden:/config
-    ports:
-      - 80:80
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      vaultwarden:
+        image: ghcr.io/daemonless/vaultwarden:latest
+        container_name: vaultwarden
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+        volumes:
+          - /data/config/vaultwarden:/config
+        ports:
+          - 80:80
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 

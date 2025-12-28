@@ -11,34 +11,36 @@ Self-hosted productivity platform (file sync, share, collaboration).
 
 ## Quick Start
 
-```bash
-podman run -d --name nextcloud \
-  --network=host \
-  -e PUID=1000 -e PGID=1000 \
-  -v /path/to/config:/config \
-  -v /path/to/data:/data \
-  ghcr.io/daemonless/nextcloud:latest
-```
+=== "Podman CLI"
 
-Access at: http://localhost:80
+    ```bash
+    podman run -d --name nextcloud \
+      --network=host \
+      -e PUID=1000 -e PGID=1000 \
+      -v /path/to/config:/config \
+      -v /path/to/data:/data \
+      ghcr.io/daemonless/nextcloud:latest
+    ```
+    
+    Access at: http://localhost:80
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  nextcloud:
-    image: ghcr.io/daemonless/nextcloud:latest
-    container_name: nextcloud
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /data/config/nextcloud:/config
-      - /data/nextcloud:/data
-    network_mode: host
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      nextcloud:
+        image: ghcr.io/daemonless/nextcloud:latest
+        container_name: nextcloud
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+        volumes:
+          - /data/config/nextcloud:/config
+          - /data/nextcloud:/data
+        network_mode: host
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 

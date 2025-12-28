@@ -10,7 +10,7 @@ from pathlib import Path
 
 # Constants
 REPO_ROOT = Path(__file__).parent.parent
-TARGET_REPOS_DIR = REPO_ROOT.parent / "repos"
+TARGET_REPOS_DIR = REPO_ROOT.parent
 
 # Repos to skip (meta repos, not container images)
 SKIP_REPOS = {"daemonless", "daemonless-io"}

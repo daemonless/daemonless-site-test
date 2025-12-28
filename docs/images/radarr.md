@@ -15,40 +15,65 @@ Movie collection manager for Usenet and BitTorrent users.
 
 ## Quick Start
 
-```bash
-podman run -d --name radarr \
-  -p 7878:7878 \
-  --annotation 'org.freebsd.jail.allow.mlock=true' \
-  -e PUID=1000 -e PGID=1000 \
-  -v /path/to/config:/config \
-  -v /path/to/movies:/movies \
-  -v /path/to/downloads:/downloads \
-  ghcr.io/daemonless/radarr:latest
-```
+=== "Podman CLI"
 
-Access at: http://localhost:7878
+    ```bash
+    podman run -d --name radarr \
+      -p 7878:7878 \
+      --annotation 'org.freebsd.jail.allow.mlock=true' \
+      -e PUID=1000 -e PGID=1000 \
+      -v /path/to/config:/config \
+      -v /path/to/movies:/movies \
+      -v /path/to/downloads:/downloads \
+      ghcr.io/daemonless/radarr:latest
+    ```
+    
+    Access at: http://localhost:7878
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  radarr:
-    image: ghcr.io/daemonless/radarr:latest
-    container_name: radarr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /data/config/radarr:/config
-      - /data/media/movies:/movies
-      - /data/downloads:/downloads
-    ports:
-      - 7878:7878
-    annotations:
-      org.freebsd.jail.allow.mlock: "true"
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      radarr:
+        image: ghcr.io/daemonless/radarr:latest
+        container_name: radarr
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+        volumes:
+          - /data/config/radarr:/config
+          - /data/media/movies:/movies
+          - /data/downloads:/downloads
+        ports:
+          - 7878:7878
+        annotations:
+          org.freebsd.jail.allow.mlock: "true"
+        restart: unless-stopped
+    ```
+
+=== "Ansible"
+
+    ```yaml
+    - name: Deploy Radarr
+      containers.podman.podman_container:
+        name: radarr
+        image: ghcr.io/daemonless/radarr:latest
+        state: started
+        restart_policy: unless-stopped
+        env:
+          PUID: "1000"
+          PGID: "1000"
+          TZ: "America/New_York"
+        ports:
+          - "7878:7878"
+        volumes:
+          - /data/config/radarr:/config
+          - /data/media/movies:/movies
+          - /data/downloads:/downloads
+        annotation:
+          org.freebsd.jail.allow.mlock: "true"
+    ```
 
 ## Environment Variables
 

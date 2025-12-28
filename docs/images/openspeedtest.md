@@ -11,25 +11,27 @@ Free and open-source HTML5 network speed test.
 
 ## Quick Start
 
-```bash
-podman run -d --name openspeedtest \
-  -p 3000:3000 \
-  ghcr.io/daemonless/openspeedtest:latest
-```
+=== "Podman CLI"
 
-Access at: http://localhost:3000
+    ```bash
+    podman run -d --name openspeedtest \
+      -p 3000:3000 \
+      ghcr.io/daemonless/openspeedtest:latest
+    ```
+    
+    Access at: http://localhost:3000
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  openspeedtest:
-    image: ghcr.io/daemonless/openspeedtest:latest
-    container_name: openspeedtest
-    ports:
-      - 3000:3000
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      openspeedtest:
+        image: ghcr.io/daemonless/openspeedtest:latest
+        container_name: openspeedtest
+        ports:
+          - 3000:3000
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 

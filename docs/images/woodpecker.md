@@ -9,41 +9,43 @@ Continuous Integration (CI) server and agent.
 | **Tags** | `:latest` |
 | **Source** | [github.com/daemonless/woodpecker](https://github.com/daemonless/woodpecker) |
 
-## podman-compose
+## Quick Start
 
-```yaml
-services:
-  woodpecker-server:
-    image: ghcr.io/daemonless/woodpecker:latest
-    container_name: woodpecker-server
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-      - WOODPECKER_SERVER_ENABLE=true
-      - WOODPECKER_GITEA=true
-      - WOODPECKER_GITEA_URL=https://gitea.example.com
-      - WOODPECKER_AGENT_SECRET=changeme
-    volumes:
-      - /data/woodpecker:/var/lib/woodpecker
-    ports:
-      - 8000:8000
-      - 9000:9000
-    restart: unless-stopped
+=== "Compose"
 
-  woodpecker-agent:
-    image: ghcr.io/daemonless/woodpecker:latest
-    container_name: woodpecker-agent
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - WOODPECKER_AGENT_ENABLE=true
-      - WOODPECKER_SERVER=woodpecker-server:9000
-      - WOODPECKER_AGENT_SECRET=changeme
-    volumes:
-      - /var/run/podman/podman.sock:/var/run/podman.sock
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      woodpecker-server:
+        image: ghcr.io/daemonless/woodpecker:latest
+        container_name: woodpecker-server
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+          - WOODPECKER_SERVER_ENABLE=true
+          - WOODPECKER_GITEA=true
+          - WOODPECKER_GITEA_URL=https://gitea.example.com
+          - WOODPECKER_AGENT_SECRET=changeme
+        volumes:
+          - /data/woodpecker:/var/lib/woodpecker
+        ports:
+          - 8000:8000
+          - 9000:9000
+        restart: unless-stopped
+    
+      woodpecker-agent:
+        image: ghcr.io/daemonless/woodpecker:latest
+        container_name: woodpecker-agent
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - WOODPECKER_AGENT_ENABLE=true
+          - WOODPECKER_SERVER=woodpecker-server:9000
+          - WOODPECKER_AGENT_SECRET=changeme
+        volumes:
+          - /var/run/podman/podman.sock:/var/run/podman.sock
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 

@@ -11,33 +11,35 @@ Request management and media discovery tool for Plex.
 
 ## Quick Start
 
-```bash
-podman run -d --name overseerr \
-  -p 5055:5055 \
-  -e PUID=1000 -e PGID=1000 \
-  -v /path/to/config:/config \
-  ghcr.io/daemonless/overseerr:latest
-```
+=== "Podman CLI"
 
-Access at: http://localhost:5055
+    ```bash
+    podman run -d --name overseerr \
+      -p 5055:5055 \
+      -e PUID=1000 -e PGID=1000 \
+      -v /path/to/config:/config \
+      ghcr.io/daemonless/overseerr:latest
+    ```
+    
+    Access at: http://localhost:5055
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  overseerr:
-    image: ghcr.io/daemonless/overseerr:latest
-    container_name: overseerr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /data/config/overseerr:/config
-    ports:
-      - 5055:5055
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      overseerr:
+        image: ghcr.io/daemonless/overseerr:latest
+        container_name: overseerr
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+        volumes:
+          - /data/config/overseerr:/config
+        ports:
+          - 5055:5055
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 

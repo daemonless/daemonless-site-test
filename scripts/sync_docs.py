@@ -12,7 +12,7 @@ from typing import Optional
 # Constants
 REPO_ROOT = Path(__file__).parent.parent
 DOCS_DIR = REPO_ROOT / "docs" / "images"
-REPOS_DIR = REPO_ROOT.parent / "repos"
+REPOS_DIR = REPO_ROOT.parent
 
 # Base images to skip (no user-facing docs)
 SKIP_REPOS = {"base", "arr-base", "nginx-base"}

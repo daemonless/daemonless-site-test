@@ -11,32 +11,34 @@ Deluxe latency measurement tool.
 
 ## Quick Start
 
-```bash
-podman run -d --name smokeping \
-  --network=host \
-  -e PUID=1000 -e PGID=1000 \
-  -v /path/to/config:/config \
-  ghcr.io/daemonless/smokeping:latest
-```
+=== "Podman CLI"
 
-Access at: http://localhost:80/smokeping/smokeping.cgi
+    ```bash
+    podman run -d --name smokeping \
+      --network=host \
+      -e PUID=1000 -e PGID=1000 \
+      -v /path/to/config:/config \
+      ghcr.io/daemonless/smokeping:latest
+    ```
+    
+    Access at: http://localhost:80/smokeping/smokeping.cgi
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  smokeping:
-    image: ghcr.io/daemonless/smokeping:latest
-    container_name: smokeping
-    network_mode: host
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /data/config/smokeping:/config
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      smokeping:
+        image: ghcr.io/daemonless/smokeping:latest
+        container_name: smokeping
+        network_mode: host
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+        volumes:
+          - /data/config/smokeping:/config
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 

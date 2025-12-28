@@ -15,40 +15,42 @@ TV show collection manager for Usenet and BitTorrent users.
 
 ## Quick Start
 
-```bash
-podman run -d --name sonarr \
-  -p 8989:8989 \
-  --annotation 'org.freebsd.jail.allow.mlock=true' \
-  -e PUID=1000 -e PGID=1000 \
-  -v /path/to/config:/config \
-  -v /path/to/tv:/tv \
-  -v /path/to/downloads:/downloads \
-  ghcr.io/daemonless/sonarr:latest
-```
+=== "Podman CLI"
 
-Access at: http://localhost:8989
+    ```bash
+    podman run -d --name sonarr \
+      -p 8989:8989 \
+      --annotation 'org.freebsd.jail.allow.mlock=true' \
+      -e PUID=1000 -e PGID=1000 \
+      -v /path/to/config:/config \
+      -v /path/to/tv:/tv \
+      -v /path/to/downloads:/downloads \
+      ghcr.io/daemonless/sonarr:latest
+    ```
+    
+    Access at: http://localhost:8989
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  sonarr:
-    image: ghcr.io/daemonless/sonarr:latest
-    container_name: sonarr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /data/config/sonarr:/config
-      - /data/media/tv:/tv
-      - /data/downloads:/downloads
-    ports:
-      - 8989:8989
-    annotations:
-      org.freebsd.jail.allow.mlock: "true"
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      sonarr:
+        image: ghcr.io/daemonless/sonarr:latest
+        container_name: sonarr
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+        volumes:
+          - /data/config/sonarr:/config
+          - /data/media/tv:/tv
+          - /data/downloads:/downloads
+        ports:
+          - 8989:8989
+        annotations:
+          org.freebsd.jail.allow.mlock: "true"
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 

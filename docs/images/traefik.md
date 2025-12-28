@@ -11,38 +11,40 @@ Modern HTTP reverse proxy and load balancer.
 
 ## Quick Start
 
-```bash
-podman run -d --name traefik \
-  -p 80:80 -p 443:443 -p 8080:8080 \
-  -e PUID=1000 -e PGID=1000 \
-  -v /path/to/config:/config \
-  --health-cmd /healthz \
-  ghcr.io/daemonless/traefik:latest
-```
+=== "Podman CLI"
 
-Access dashboard at: http://localhost:8080/dashboard/
+    ```bash
+    podman run -d --name traefik \
+      -p 80:80 -p 443:443 -p 8080:8080 \
+      -e PUID=1000 -e PGID=1000 \
+      -v /path/to/config:/config \
+      --health-cmd /healthz \
+      ghcr.io/daemonless/traefik:latest
+    ```
+    
+    Access dashboard at: http://localhost:8080/dashboard/
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  traefik:
-    image: ghcr.io/daemonless/traefik:latest
-    container_name: traefik
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /data/config/traefik:/config
-    ports:
-      - 80:80
-      - 443:443
-      - 8080:8080
-    healthcheck:
-      test: ["CMD", "/healthz"]
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      traefik:
+        image: ghcr.io/daemonless/traefik:latest
+        container_name: traefik
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+        volumes:
+          - /data/config/traefik:/config
+        ports:
+          - 80:80
+          - 443:443
+          - 8080:8080
+        healthcheck:
+          test: ["CMD", "/healthz"]
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 

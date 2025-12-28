@@ -15,40 +15,42 @@ Book and audiobook collection manager for Usenet and BitTorrent users.
 
 ## Quick Start
 
-```bash
-podman run -d --name readarr \
-  -p 8787:8787 \
-  --annotation 'org.freebsd.jail.allow.mlock=true' \
-  -e PUID=1000 -e PGID=1000 \
-  -v /path/to/config:/config \
-  -v /path/to/books:/books \
-  -v /path/to/downloads:/downloads \
-  ghcr.io/daemonless/readarr:latest
-```
+=== "Podman CLI"
 
-Access at: http://localhost:8787
+    ```bash
+    podman run -d --name readarr \
+      -p 8787:8787 \
+      --annotation 'org.freebsd.jail.allow.mlock=true' \
+      -e PUID=1000 -e PGID=1000 \
+      -v /path/to/config:/config \
+      -v /path/to/books:/books \
+      -v /path/to/downloads:/downloads \
+      ghcr.io/daemonless/readarr:latest
+    ```
+    
+    Access at: http://localhost:8787
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  readarr:
-    image: ghcr.io/daemonless/readarr:latest
-    container_name: readarr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /data/config/readarr:/config
-      - /data/media/books:/books
-      - /data/downloads:/downloads
-    ports:
-      - 8787:8787
-    annotations:
-      org.freebsd.jail.allow.mlock: "true"
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      readarr:
+        image: ghcr.io/daemonless/readarr:latest
+        container_name: readarr
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+        volumes:
+          - /data/config/readarr:/config
+          - /data/media/books:/books
+          - /data/downloads:/downloads
+        ports:
+          - 8787:8787
+        annotations:
+          org.freebsd.jail.allow.mlock: "true"
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 

@@ -11,36 +11,38 @@ Binary newsreader for Usenet with NZB support.
 
 ## Quick Start
 
-```bash
-podman run -d --name sabnzbd \
-  -p 8080:8080 \
-  -e PUID=1000 -e PGID=1000 \
-  -v /path/to/config:/config \
-  -v /path/to/downloads:/downloads \
-  ghcr.io/daemonless/sabnzbd:latest
-```
+=== "Podman CLI"
 
-Access at: http://localhost:8080
+    ```bash
+    podman run -d --name sabnzbd \
+      -p 8080:8080 \
+      -e PUID=1000 -e PGID=1000 \
+      -v /path/to/config:/config \
+      -v /path/to/downloads:/downloads \
+      ghcr.io/daemonless/sabnzbd:latest
+    ```
+    
+    Access at: http://localhost:8080
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  sabnzbd:
-    image: ghcr.io/daemonless/sabnzbd:latest
-    container_name: sabnzbd
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-      - HOST_WHITELIST=myserver,myserver.local
-    volumes:
-      - /data/config/sabnzbd:/config
-      - /data/downloads:/downloads
-    ports:
-      - 8080:8080
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      sabnzbd:
+        image: ghcr.io/daemonless/sabnzbd:latest
+        container_name: sabnzbd
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+          - HOST_WHITELIST=myserver,myserver.local
+        volumes:
+          - /data/config/sabnzbd:/config
+          - /data/downloads:/downloads
+        ports:
+          - 8080:8080
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 

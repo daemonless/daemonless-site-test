@@ -11,34 +11,56 @@ Self-hosted Git service.
 
 ## Quick Start
 
-```bash
-podman run -d --name gitea \
-  --network none \
-  --annotation 'org.freebsd.jail.vnet=new' \
-  -v /containers/gitea:/gitea \
-  --restart unless-stopped \
-  ghcr.io/daemonless/gitea:latest
-```
+=== "Podman CLI"
 
-Access at: http://localhost:3000
+    ```bash
+    podman run -d --name gitea \
+      -p 3000:3000 -p 2222:22 \
+      -e PUID=1000 -e PGID=1000 \
+      -v /data/gitea:/gitea \
+      ghcr.io/daemonless/gitea:latest
+    ```
+    
+    Access at: http://localhost:3000
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  gitea:
-    image: ghcr.io/daemonless/gitea:latest
-    container_name: gitea
-    annotations:
-      org.freebsd.jail.vnet: "new"
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /data/gitea:/gitea
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      gitea:
+        image: ghcr.io/daemonless/gitea:latest
+        container_name: gitea
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+        volumes:
+          - /data/gitea:/gitea
+        ports:
+          - 3000:3000
+          - 2222:22
+        restart: unless-stopped
+    ```
+
+=== "Ansible"
+
+    ```yaml
+    - name: Deploy Gitea
+      containers.podman.podman_container:
+        name: gitea
+        image: ghcr.io/daemonless/gitea:latest
+        state: started
+        restart_policy: unless-stopped
+        env:
+          PUID: "1000"
+          PGID: "1000"
+          TZ: "America/New_York"
+        ports:
+          - "3000:3000"
+          - "2222:22"
+        volumes:
+          - /data/gitea:/gitea
+    ```
 
 ## Environment Variables
 

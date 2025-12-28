@@ -11,36 +11,38 @@ Monitoring, analytics, and notifications for Plex Media Server.
 
 ## Quick Start
 
-```bash
-podman run -d --name tautulli \
-  -p 8181:8181 \
-  -e PUID=1000 -e PGID=1000 \
-  -v /path/to/config:/config \
-  --health-cmd /healthz \
-  ghcr.io/daemonless/tautulli:latest
-```
+=== "Podman CLI"
 
-Access at: http://localhost:8181
+    ```bash
+    podman run -d --name tautulli \
+      -p 8181:8181 \
+      -e PUID=1000 -e PGID=1000 \
+      -v /path/to/config:/config \
+      --health-cmd /healthz \
+      ghcr.io/daemonless/tautulli:latest
+    ```
+    
+    Access at: http://localhost:8181
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  tautulli:
-    image: ghcr.io/daemonless/tautulli:latest
-    container_name: tautulli
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /data/config/tautulli:/config
-    ports:
-      - 8181:8181
-    healthcheck:
-      test: ["CMD", "/healthz"]
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      tautulli:
+        image: ghcr.io/daemonless/tautulli:latest
+        container_name: tautulli
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+        volumes:
+          - /data/config/tautulli:/config
+        ports:
+          - 8181:8181
+        healthcheck:
+          test: ["CMD", "/healthz"]
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 

@@ -10,14 +10,16 @@ Mesh VPN container.
 
 ## Quick Start
 
-```bash
-podman run -d --name tailscale \
-  --network none \
-  --annotation 'org.freebsd.jail.vnet=new' \
-  -v /containers/tailscale:/var/db/tailscale \
-  --restart unless-stopped \
-  ghcr.io/daemonless/tailscale:latest
-```
+=== "Podman CLI"
+
+    ```bash
+    podman run -d --name tailscale \
+      --network none \
+      --annotation 'org.freebsd.jail.vnet=new' \
+      -v /containers/tailscale:/var/db/tailscale \
+      --restart unless-stopped \
+      ghcr.io/daemonless/tailscale:latest
+    ```
 
 ## Environment Variables
 

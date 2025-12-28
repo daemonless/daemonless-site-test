@@ -15,40 +15,42 @@ The Free Software Media System
 
 ## Quick Start
 
-```bash
-podman run -d --name jellyfin \
-  -p 8096:8096 \
-  -e PUID=1000 -e PGID=1000 \
-  -v /path/to/config:/config \
-  -v /path/to/cache:/cache \
-  -v /path/to/media:/media \
-  --annotation 'org.freebsd.jail.allow.mlock=true' \
-  ghcr.io/daemonless/jellyfin:latest
-```
+=== "Podman CLI"
 
-Access at: http://localhost:8096
+    ```bash
+    podman run -d --name jellyfin \
+      -p 8096:8096 \
+      -e PUID=1000 -e PGID=1000 \
+      -v /path/to/config:/config \
+      -v /path/to/cache:/cache \
+      -v /path/to/media:/media \
+      --annotation 'org.freebsd.jail.allow.mlock=true' \
+      ghcr.io/daemonless/jellyfin:latest
+    ```
+    
+    Access at: http://localhost:8096
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  jellyfin:
-    image: ghcr.io/daemonless/jellyfin:latest
-    container_name: jellyfin
-    annotations:
-      org.freebsd.jail.allow.mlock: "true"
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /data/config/jellyfin:/config
-      - /data/cache/jellyfin:/cache
-      - /data/media:/media
-    ports:
-      - 8096:8096
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      jellyfin:
+        image: ghcr.io/daemonless/jellyfin:latest
+        container_name: jellyfin
+        annotations:
+          org.freebsd.jail.allow.mlock: "true"
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+        volumes:
+          - /data/config/jellyfin:/config
+          - /data/cache/jellyfin:/cache
+          - /data/media:/media
+        ports:
+          - 8096:8096
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 

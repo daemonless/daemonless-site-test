@@ -15,36 +15,38 @@ Indexer manager/proxy for *arr applications.
 
 ## Quick Start
 
-```bash
-podman run -d --name prowlarr \
-  -p 9696:9696 \
-  --annotation 'org.freebsd.jail.allow.mlock=true' \
-  -e PUID=1000 -e PGID=1000 \
-  -v /path/to/config:/config \
-  ghcr.io/daemonless/prowlarr:latest
-```
+=== "Podman CLI"
 
-Access at: http://localhost:9696
+    ```bash
+    podman run -d --name prowlarr \
+      -p 9696:9696 \
+      --annotation 'org.freebsd.jail.allow.mlock=true' \
+      -e PUID=1000 -e PGID=1000 \
+      -v /path/to/config:/config \
+      ghcr.io/daemonless/prowlarr:latest
+    ```
+    
+    Access at: http://localhost:9696
 
-## podman-compose
+=== "Compose"
 
-```yaml
-services:
-  prowlarr:
-    image: ghcr.io/daemonless/prowlarr:latest
-    container_name: prowlarr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /data/config/prowlarr:/config
-    ports:
-      - 9696:9696
-    annotations:
-      org.freebsd.jail.allow.mlock: "true"
-    restart: unless-stopped
-```
+    ```yaml
+    services:
+      prowlarr:
+        image: ghcr.io/daemonless/prowlarr:latest
+        container_name: prowlarr
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=America/New_York
+        volumes:
+          - /data/config/prowlarr:/config
+        ports:
+          - 9696:9696
+        annotations:
+          org.freebsd.jail.allow.mlock: "true"
+        restart: unless-stopped
+    ```
 
 ## Environment Variables
 
