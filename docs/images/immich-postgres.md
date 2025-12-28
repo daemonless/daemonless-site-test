@@ -14,6 +14,10 @@ Drop-in compatible with official Immich PostgreSQL image.
 | **Tags** | `:latest` |
 | **Source** | [github.com/daemonless/immich-postgres](https://github.com/daemonless/immich-postgres) |
 
+!!! warning "Requires patched ocijail"
+    This application requires the `allow.mlock` annotation.
+    See [ocijail patch](../guides/ocijail-patch.md).
+
 ## Quick Start
 
 === "Podman CLI"
@@ -28,7 +32,7 @@ Drop-in compatible with official Immich PostgreSQL image.
       ghcr.io/daemonless/immich-postgres:latest
     ```
     
-    **Note:** The `org.freebsd.jail.allow.sysvipc=true` annotation is required for PostgreSQL shared memory.
+    **Note:** The `org.freebsd.jail.allow.sysvipc=true` annotation is required for PostgreSQL shared memory. This requires a patched version of `ocijail`. See the [ocijail patch guide](https://daemonless.io/guides/ocijail-patch/) for build instructions.
 
 === "Compose"
 
