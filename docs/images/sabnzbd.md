@@ -46,6 +46,32 @@ Binary newsreader for Usenet with NZB support.
 
 ## Environment Variables
 
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PUID` | User ID for the application process | `1000` |
+| `PGID` | Group ID for the application process | `1000` |
+| `TZ` | Timezone for the container | `UTC` |
+| `S6_LOG_ENABLE` | Enable/Disable file logging | `1` |
+| `S6_LOG_MAX_SIZE` | Max size per log file (bytes) | `1048576` |
+| `S6_LOG_MAX_FILES` | Number of rotated log files to keep | `10` |
+
+## Logging
+
+This image uses `s6-log` for internal log rotation.
+- **System Logs**: Captured from console and stored at `/config/logs/daemonless/sabnzbd/`.
+- **Application Logs**: Managed by the app and typically found in `/config/logs/`.
+- **Podman Logs**: Output is mirrored to the console, so `podman logs` still works.
+
+## Tags
+
+| Tag | Source | Description |
+|-----|--------|-------------|
+| `:latest` | [Upstream Releases](https://github.com/sabnzbd/sabnzbd/releases) | Latest upstream release |
+| `:pkg` | `news/sabnzbd` | FreeBSD quarterly packages |
+| `:pkg-latest` | `news/sabnzbd` | FreeBSD latest packages |
+
+## Environment Variables
+
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PUID` | 1000 | User ID for app |
@@ -60,9 +86,22 @@ Binary newsreader for Usenet with NZB support.
 | `/config` | Configuration directory |
 | `/downloads` | Download directory |
 
-## Logging
+## Ports
 
-This image uses `s6-log` for internal log rotation.
-- **System Logs**: Captured from console and stored at `/config/logs/daemonless/sabnzbd/`.
-- **Application Logs**: Managed by the app and typically found in `/config/logs/`.
-- **Podman Logs**: Output is mirrored to the console, so `podman logs` still works.
+| Port | Description |
+|------|-------------|
+| 8080 | Web UI |
+
+## Notes
+
+- **User:** `bsd` (UID/GID set via PUID/PGID, default 1000)
+- **Base:** Built on `ghcr.io/daemonless/base-image` (FreeBSD)
+- **Tools:** Includes par2, unrar, and 7-zip
+
+### Hostname Verification
+If you see "Access denied - Hostname verification failed", set `HOST_WHITELIST` environment variable or edit config.
+
+## Links
+
+- [Website](https://sabnzbd.org/)
+- [FreshPorts](https://www.freshports.org/news/sabnzbd/)

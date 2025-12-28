@@ -6,6 +6,7 @@ Scans cloned repos and parses Containerfile labels to generate docs/images/*.md 
 
 import os
 import re
+import yaml
 from pathlib import Path
 from typing import Optional
 
@@ -16,6 +17,17 @@ REPOS_DIR = REPO_ROOT.parent
 
 # Base images to skip (no user-facing docs)
 SKIP_REPOS = {"base", "arr-base", "nginx-base"}
+
+
+def parse_metadata_file(metadata_path: Path) -> dict:
+    """Parse .daemonless.yml metadata file."""
+    try:
+        with open(metadata_path, 'r') as f:
+            data = yaml.safe_load(f)
+        return data
+    except Exception as e:
+        print(f"Error parsing {metadata_path}: {e}")
+        return {}
 
 
 def parse_containerfile_labels(containerfile: Path) -> dict:
@@ -40,6 +52,9 @@ def parse_containerfile_labels(containerfile: Path) -> dict:
     title_match = re.search(r'org\.opencontainers\.image\.title="([^"]*)"', content)
     if title_match:
         labels["title"] = title_match.group(1)
+    
+    # Default type is image
+    labels["type"] = "image"
 
     return labels
 
@@ -54,7 +69,7 @@ def get_image_tags(repo_path: Path) -> list[str]:
 
 
 def discover_images() -> dict:
-    """Scan repos directory and build image metadata from Containerfiles."""
+    """Scan repos directory and build image metadata from Containerfiles or .daemonless.yml."""
     images = {}
 
     if not REPOS_DIR.exists():
@@ -68,62 +83,92 @@ def discover_images() -> dict:
         name = repo_path.name
         if name in SKIP_REPOS:
             continue
-
+        
+        metadata = {}
+        metadata_file = repo_path / ".daemonless.yml"
         containerfile = repo_path / "Containerfile"
-        if not containerfile.exists():
+
+        if metadata_file.exists():
+            metadata = parse_metadata_file(metadata_file)
+        elif containerfile.exists():
+            metadata = parse_containerfile_labels(containerfile)
+        else:
             continue
 
-        labels = parse_containerfile_labels(containerfile)
-
         # Skip WIP images
-        if labels.get("wip") == "true":
+        if metadata.get("wip") == "true":
             continue
 
         images[name] = {
-            "category": labels.get("category", "Uncategorized"),
-            "port": labels.get("port"),
-            "tags": get_image_tags(repo_path),
-            "title": labels.get("title", name.title()),
+            "category": metadata.get("category", "Uncategorized"),
+            "port": metadata.get("port"),
+            "tags": get_image_tags(repo_path) if metadata.get("type", "image") == "image" else [],
+            "title": metadata.get("title", name.title()),
+            "type": metadata.get("type", "image"),
+            "description": metadata.get("description"),
         }
 
     return images
 
 
-def parse_readme_sections(content: str) -> dict[str, str]:
-    """Parse markdown content into sections based on H2 headers."""
-    sections = {}
-    current_section = "intro"
+def parse_readme_sections(content: str) -> list[dict]:
+    """Parse markdown content into ordered sections based on H2 headers."""
+    sections = []
+    current_title = "Intro"
+    current_key = "intro"
     buffer = []
+
+    def flush():
+        nonlocal buffer
+        text = "\n".join(buffer).strip()
+        if text:
+            sections.append({
+                "key": current_key,
+                "title": current_title,
+                "content": text
+            })
+        buffer = []
 
     for line in content.splitlines():
         if line.startswith("## "):
-            if buffer:
-                sections[current_section] = "\n".join(buffer).strip()
-            current_section = line[3:].strip().lower()
-            buffer = []
+            flush()
+            current_title = line[3:].strip()
+            # Normalize key: lowercase and remove special chars for reliable matching
+            current_key = current_title.lower()
         else:
             buffer.append(line)
-
-    if buffer:
-        sections[current_section] = "\n".join(buffer).strip()
-
+    
+    flush()
     return sections
 
 
-def extract_port(sections: dict[str, str], labels_port: Optional[str]) -> Optional[str]:
+def extract_port(sections_list: list[dict], labels_port: Optional[str]) -> Optional[str]:
     """Extract port number from labels or README sections."""
     # Prefer Containerfile label
     if labels_port:
         return labels_port.split(",")[0]  # First port if multiple
 
+    # Helper to find content by key
+    def get_content(key_part):
+        for s in sections_list:
+            if key_part in s["key"]:
+                return s["content"]
+        return ""
+
     # Fallback to README parsing
-    if "ports" in sections:
-        match = re.search(r"\|\s*(\d+)\s*\|", sections["ports"])
+    ports_content = get_content("ports")
+    if ports_content:
+        match = re.search(r"\|\s*(\d+)\s*\|", ports_content)
+        if match:
+            return match.group(1)
+        # Try simple list format
+        match = re.search(r"-\s*`?(\d+)`?", ports_content)
         if match:
             return match.group(1)
 
-    if "quick start" in sections:
-        match = re.search(r"-p\s+(\d+):", sections["quick start"])
+    qs_content = get_content("quick start")
+    if qs_content:
+        match = re.search(r"-p\s+(\d+):", qs_content)
         if match:
             return match.group(1)
 
@@ -137,11 +182,14 @@ def generate_header_table(image_name: str, config: dict, port: Optional[str]) ->
     if port:
         rows.append(f"| **Port** | {port} |")
 
-    registry = f"`ghcr.io/daemonless/{image_name}`"
-    rows.append(f"| **Registry** | {registry} |")
+    if config.get("type") == "stack":
+        rows.append("| **Type** | Bundle / Stack |")
+    else:
+        registry = f"`ghcr.io/daemonless/{image_name}`"
+        rows.append(f"| **Registry** | {registry} |")
 
-    tags = [f"`:{tag}`" for tag in config.get("tags", ["latest"])]
-    rows.append(f"| **Tags** | {', '.join(tags)} |")
+        tags = [f"`:{tag}`" for tag in config.get("tags", ["latest"])]
+        rows.append(f"| **Tags** | {', '.join(tags)} |")
 
     rows.append(f"| **Source** | [github.com/daemonless/{image_name}](https://github.com/daemonless/{image_name}) |")
 
@@ -164,72 +212,96 @@ def process_image(name: str, config: dict):
     print(f"Processing {name}...")
 
     content = readme_path.read_text()
+    
+    # Parse sections preserving order
+    sections_list = parse_readme_sections(content)
+    
+    # Map for easy lookup of specific sections
+    sections_map = {s["key"]: s for s in sections_list}
 
     # Extract title (H1)
     title_match = re.match(r"^#\s+(.+)$", content, re.MULTILINE)
     title = title_match.group(1) if title_match else name.capitalize()
 
-    sections = parse_readme_sections(content)
+    # Intro is usually the first section if it has key 'intro'
+    intro = ""
+    if sections_list and sections_list[0]["key"] == "intro":
+        intro = sections_list[0]["content"]
+        # Remove H1 if present in intro text
+        intro = re.sub(r"^#\s+.*$\n", "", intro, flags=re.MULTILINE).strip()
 
-    # Clean intro: remove H1
-    intro = sections.get("intro", "")
-    intro = re.sub(r"^#\s+.*$\n", "", intro, flags=re.MULTILINE).strip()
+    port = extract_port(sections_list, config.get("port"))
 
-    port = extract_port(sections, config.get("port"))
-
-    # Build new content
+    # Start building content
     new_content = [f"# {title}\n", intro + "\n"]
 
     # Header Table
     new_content.append(generate_header_table(name, config, port) + "\n")
 
     # Special Warnings (ocijail)
-    notes = sections.get("notes", "")
-    if "ocijail" in notes.lower() or "mlock" in notes.lower():
-        new_content.append('!!! warning "Requires patched ocijail"\n    This application requires the `allow.mlock` annotation.\n    See [ocijail patch](../guides/ocijail-patch.md).\n')
+    # Scan all content for keywords
+    full_text = content.lower()
+    if "ocijail" in full_text or "mlock" in full_text:
+         # Double check context to avoid false positives? 
+         # Assuming if it's mentioned, it's relevant.
+         # But usually it's in a Notes section.
+         if "requires" in full_text or "patch" in full_text or "annotation" in full_text:
+            new_content.append('!!! warning "Requires patched ocijail"\n    This application requires the `allow.mlock` annotation.\n    See [ocijail patch](../guides/ocijail-patch.md).\n')
+
+    # consumed_indices tracks which sections have been handled (Intro is handled)
+    consumed_indices = {0} if sections_list and sections_list[0]["key"] == "intro" else set()
 
     # Deployment Tabs (Quick Start, Compose, Ansible)
+    # We look for specific keys
     tabs = []
     
-    if "quick start" in sections:
-        content_qs = sections["quick start"]
-        # Indent content
-        content_qs = "\n".join("    " + line for line in content_qs.splitlines())
-        tabs.append(f'=== "Podman CLI"\n\n{content_qs}\n')
-        
-    if "podman-compose" in sections:
-        content_pc = sections["podman-compose"]
-        content_pc = "\n".join("    " + line for line in content_pc.splitlines())
-        tabs.append(f'=== "Compose"\n\n{content_pc}\n')
-    elif "docker-compose" in sections:
-        content_dc = sections["docker-compose"]
-        content_dc = "\n".join("    " + line for line in content_dc.splitlines())
-        tabs.append(f'=== "Compose"\n\n{content_dc}\n')
+    # Helper to find index and content
+    def find_section(key_sub, exclude_subs=None):
+        for i, s in enumerate(sections_list):
+            if i in consumed_indices:
+                continue
+            if key_sub in s["key"]:
+                # Check exclusions
+                if exclude_subs and any(ex in s["key"] for ex in exclude_subs):
+                    continue
+                return i, s
+        return None, None
 
-    if "ansible" in sections:
-        content_ans = sections["ansible"]
-        content_ans = "\n".join("    " + line for line in content_ans.splitlines())
+    # 1. Compose (Check first to catch "Quick Start (Compose)")
+    idx, sect = find_section("compose")
+    if sect:
+        content_pc = "\n".join("    " + line for line in sect["content"].splitlines())
+        tabs.append(f'=== "Compose"\n\n{content_pc}\n')
+        consumed_indices.add(idx)
+
+    # 2. Ansible
+    idx, sect = find_section("ansible")
+    if sect:
+        content_ans = "\n".join("    " + line for line in sect["content"].splitlines())
         tabs.append(f'=== "Ansible"\n\n{content_ans}\n')
+        consumed_indices.add(idx)
+
+    # 3. Podman CLI (Quick Start - excluding compose/ansible if mixed)
+    idx, sect = find_section("quick start", exclude_subs=["compose", "ansible"])
+    if sect:
+        content_qs = "\n".join("    " + line for line in sect["content"].splitlines())
+        # Insert at the beginning if we want CLI first, or just append
+        # Usually CLI is first tab.
+        tabs.insert(0, f'=== "Podman CLI"\n\n{content_qs}\n')
+        consumed_indices.add(idx)
 
     if tabs:
         new_content.append("## Quick Start\n")
         new_content.append("\n".join(tabs))
 
-
-    # Environment Variables
-    if "environment variables" in sections:
-        new_content.append("## Environment Variables\n")
-        new_content.append(sections["environment variables"] + "\n")
-
-    # Volumes
-    if "volumes" in sections:
-        new_content.append("## Volumes\n")
-        new_content.append(sections["volumes"] + "\n")
-
-    # Logging
-    if "logging" in sections:
-        new_content.append("## Logging\n")
-        new_content.append(sections["logging"] + "\n")
+    # Append all other sections in original order
+    for i, section in enumerate(sections_list):
+        if i in consumed_indices:
+            continue
+        
+        # Add the section
+        new_content.append(f"## {section['title']}\n")
+        new_content.append(section['content'] + "\n")
 
     # Write output
     out_path = DOCS_DIR / f"{name}.md"

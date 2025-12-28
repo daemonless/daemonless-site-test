@@ -11,6 +11,24 @@ Continuous Integration (CI) server and agent.
 
 ## Quick Start
 
+=== "Podman CLI"
+
+    ```bash
+    podman run -d --name woodpecker-server \
+      -p 8000:8000 -p 9000:9000 \
+      -e PUID=1000 -e PGID=1000 \
+      -e WOODPECKER_SERVER_ENABLE=true \
+      -e WOODPECKER_GITEA=true \
+      -e WOODPECKER_GITEA_URL=https://gitea.example.com \
+      -e WOODPECKER_GITEA_CLIENT=your_client_id \
+      -e WOODPECKER_GITEA_SECRET=your_client_secret \
+      -e WOODPECKER_AGENT_SECRET=shared_secret \
+      -v /path/to/data:/var/lib/woodpecker \
+      ghcr.io/daemonless/woodpecker:latest
+    ```
+    
+    Access at: http://localhost:8000
+
 === "Compose"
 
     ```yaml
@@ -49,6 +67,42 @@ Continuous Integration (CI) server and agent.
 
 ## Environment Variables
 
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PUID` | User ID for the application process | `1000` |
+| `PGID` | Group ID for the application process | `1000` |
+| `TZ` | Timezone for the container | `UTC` |
+| `S6_LOG_ENABLE` | Enable/Disable file logging | `1` |
+| `S6_LOG_MAX_SIZE` | Max size per log file (bytes) | `1048576` |
+| `S6_LOG_MAX_FILES` | Number of rotated log files to keep | `10` |
+
+## Logging
+
+This image uses `s6-log` for internal log rotation.
+- **System Logs**: Captured from console and stored at `/config/logs/daemonless/woodpecker/`.
+- **Application Logs**: Managed by the app and typically found in `/config/logs/`.
+- **Podman Logs**: Output is mirrored to the console, so `podman logs` still works.
+
+## Quick Start (Agent)
+
+```bash
+podman run -d --name woodpecker-agent \
+  -e PUID=1000 -e PGID=1000 \
+  -e WOODPECKER_AGENT_ENABLE=true \
+  -e WOODPECKER_SERVER=woodpecker-server:9000 \
+  -e WOODPECKER_AGENT_SECRET=shared_secret \
+  -v /var/run/podman/podman.sock:/var/run/podman.sock \
+  ghcr.io/daemonless/woodpecker:latest
+```
+
+## Tags
+
+| Tag | Source | Description |
+|-----|--------|-------------|
+| `:latest` | [Upstream Releases](https://github.com/woodpecker-ci/woodpecker) | Built from source |
+
+## Environment Variables
+
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PUID` | 1000 | User ID for app |
@@ -65,9 +119,24 @@ See [Woodpecker Docs](https://woodpecker-ci.org/docs/administration/server-confi
 |------|-------------|
 | `/var/lib/woodpecker` | Server database and data |
 
-## Logging
+## Ports
 
-This image uses `s6-log` for internal log rotation.
-- **System Logs**: Captured from console and stored at `/config/logs/daemonless/woodpecker/`.
-- **Application Logs**: Managed by the app and typically found in `/config/logs/`.
-- **Podman Logs**: Output is mirrored to the console, so `podman logs` still works.
+| Port | Description |
+|------|-------------|
+| 8000 | Web UI (Server) |
+| 9000 | gRPC Agent communication (Server) |
+
+## Notes
+
+- **User:** `bsd` (UID/GID set via PUID/PGID, default 1000)
+- **Base:** Built on `ghcr.io/daemonless/base-image` (FreeBSD)
+- **Dual Mode:** This image contains both Server and Agent binaries. Enable one or both via env vars.
+
+## Building
+
+This image is built via **Woodpecker CI** only. GitHub Actions is disabled because the Go compilation (3 binaries from source) exceeds GitHub's runner time limits.
+
+## Links
+
+- [Website](https://woodpecker-ci.org/)
+- [GitHub](https://github.com/woodpecker-ci/woodpecker)

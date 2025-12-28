@@ -51,6 +51,32 @@ Lightweight BitTorrent client with web interface.
 
 ## Environment Variables
 
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PUID` | User ID for the application process | `1000` |
+| `PGID` | Group ID for the application process | `1000` |
+| `TZ` | Timezone for the container | `UTC` |
+| `S6_LOG_ENABLE` | Enable/Disable file logging | `1` |
+| `S6_LOG_MAX_SIZE` | Max size per log file (bytes) | `1048576` |
+| `S6_LOG_MAX_FILES` | Number of rotated log files to keep | `10` |
+
+## Logging
+
+This image uses `s6-log` for internal log rotation.
+- **System Logs**: Captured from console and stored at `/config/logs/daemonless/transmission/`.
+- **Application Logs**: Managed by the app and typically found in `/config/logs/`.
+- **Podman Logs**: Output is mirrored to the console, so `podman logs` still works.
+
+## Tags
+
+| Tag | Source | Description |
+|-----|--------|-------------|
+| `:latest` | [Upstream Releases](https://transmissionbt.com/) | Latest upstream release |
+| `:pkg` | `net-p2p/transmission-daemon` | FreeBSD quarterly packages |
+| `:pkg-latest` | `net-p2p/transmission-daemon` | FreeBSD latest packages |
+
+## Environment Variables
+
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PUID` | 1000 | User ID for app |
@@ -65,9 +91,19 @@ Lightweight BitTorrent client with web interface.
 | `/downloads` | Download directory |
 | `/watch` | Watch directory for .torrent files |
 
-## Logging
+## Ports
 
-This image uses `s6-log` for internal log rotation.
-- **System Logs**: Captured from console and stored at `/config/logs/daemonless/transmission/`.
-- **Application Logs**: Managed by the app and typically found in `/config/logs/`.
-- **Podman Logs**: Output is mirrored to the console, so `podman logs` still works.
+| Port | Description |
+|------|-------------|
+| 9091 | Web UI |
+| 51413 | Peer listening port (TCP/UDP) |
+
+## Notes
+
+- **User:** `bsd` (UID/GID set via PUID/PGID, default 1000)
+- **Base:** Built on `ghcr.io/daemonless/base-image` (FreeBSD)
+
+## Links
+
+- [Website](https://transmissionbt.com/)
+- [FreshPorts](https://www.freshports.org/net-p2p/transmission-daemon/)

@@ -64,6 +64,45 @@ Self-hosted Git service.
 
 ## Environment Variables
 
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PUID` | User ID for the application process | `1000` |
+| `PGID` | Group ID for the application process | `1000` |
+| `TZ` | Timezone for the container | `UTC` |
+| `S6_LOG_ENABLE` | Enable/Disable file logging | `1` |
+| `S6_LOG_MAX_SIZE` | Max size per log file (bytes) | `1048576` |
+| `S6_LOG_MAX_FILES` | Number of rotated log files to keep | `10` |
+
+## Logging
+
+This image uses `s6-log` for internal log rotation.
+- **System Logs**: Captured from console and stored at `/config/logs/daemonless/gitea/`.
+- **Application Logs**: Managed by the app and typically found in `/config/logs/`.
+- **Podman Logs**: Output is mirrored to the console, so `podman logs` still works.
+
+## Advanced: VNET Networking
+
+For full isolation, you can use VNET. This gives the jail its own network stack, but requires manual IP configuration or a custom bridge setup.
+
+```bash
+podman run -d --name gitea \
+  --network none \
+  --annotation 'org.freebsd.jail.vnet=new' \
+  -v /containers/gitea:/gitea \
+  ghcr.io/daemonless/gitea:latest
+```
+
+**Note**: With `network=none` and `vnet=new`, the container will not have network connectivity until you assign an interface (epair) and IP address to it manually via `ifconfig` from the host.
+
+## Tags
+
+| Tag | Source | Description |
+|-----|--------|-------------|
+| `:latest` | `devel/gitea` | FreeBSD packages (latest branch) |
+| `:pkg` | `devel/gitea` | FreeBSD quarterly packages |
+
+## Environment Variables
+
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PUID` | 1000 | User ID for app |
@@ -82,9 +121,22 @@ Self-hosted Git service.
 - `/gitea/data` - Data (avatars, etc.)
 - `/gitea/log` - Logs
 
-## Logging
+## Ports
 
-This image uses `s6-log` for internal log rotation.
-- **System Logs**: Captured from console and stored at `/config/logs/daemonless/gitea/`.
-- **Application Logs**: Managed by the app and typically found in `/config/logs/`.
-- **Podman Logs**: Output is mirrored to the console, so `podman logs` still works.
+| Port | Description |
+|------|-------------|
+| 3000 | Web UI |
+| 22 | SSH |
+
+## Notes
+
+- **User:** `bsd` (UID/GID set via PUID/PGID, default 1000)
+- **Base:** Built on `ghcr.io/daemonless/base-image` (FreeBSD)
+
+### Specific Requirements
+- **VNET Optional:** Can use `--annotation 'org.freebsd.jail.vnet=new'` for isolation, but standard bridge networking works out of the box.
+
+## Links
+
+- [Website](https://about.gitea.com/)
+- [FreshPorts](https://www.freshports.org/devel/gitea/)

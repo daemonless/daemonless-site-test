@@ -8,6 +8,9 @@ Copy this to repos/<app>/README.md and fill in the placeholders.
 
 Machine learning service for [Immich](https://immich.app/) photo management providing face recognition, image classification, and smart search.
 
+!!! note "Part of the Immich Stack"
+    This is just one component of Immich. For the complete setup (docker-compose, configuration, etc.), please see the [Daemonless Immich Stack](https://github.com/daemonless/immich).
+
 | | |
 |---|---|
 | **Port** | 3003 |
@@ -64,6 +67,19 @@ Machine learning service for [Immich](https://immich.app/) photo management prov
 | `MACHINE_LEARNING_PORT` | Service port | `3003` |
 | `MACHINE_LEARNING_CACHE_FOLDER` | Model cache directory | `/cache` |
 
+## Logging
+
+This image uses `s6-log` for internal log rotation.
+- **System Logs**: Captured from console and stored at `/config/logs/daemonless/immich-ml/`.
+- **Application Logs**: Managed by the app and typically found in `/config/logs/`.
+- **Podman Logs**: Output is mirrored to the console, so `podman logs` still works.
+
+## Tags
+
+| Tag | Source | Description |
+|-----|--------|-------------|
+| `:latest` | [Upstream Releases](https://github.com/immich-app/immich) | Latest upstream release |
+
 ## Volumes
 
 | Path | Description |
@@ -71,9 +87,18 @@ Machine learning service for [Immich](https://immich.app/) photo management prov
 | `/config` | Configuration directory |
 | `/cache` | Model cache (downloads ML models on first run) |
 
-## Logging
+## Ports
 
-This image uses `s6-log` for internal log rotation.
-- **System Logs**: Captured from console and stored at `/config/logs/daemonless/immich-ml/`.
-- **Application Logs**: Managed by the app and typically found in `/config/logs/`.
-- **Podman Logs**: Output is mirrored to the console, so `podman logs` still works.
+| Port | Description |
+|------|-------------|
+| 3003 | ML API |
+
+## Notes
+
+- **User:** `bsd` (UID/GID set via PUID/PGID, default 1000)
+- **Base:** Built on `ghcr.io/daemonless/base-image` (FreeBSD)
+
+## Links
+
+- [Website](https://immich.app/)
+- [Upstream Repo](https://github.com/immich-app/immich)

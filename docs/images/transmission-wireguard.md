@@ -52,6 +52,40 @@ Transmission BitTorrent client running through a WireGuard VPN tunnel on FreeBSD
         restart: unless-stopped
     ```
 
+## Environment Variables (Standard)
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PUID` | User ID for the application process | `1000` |
+| `PGID` | Group ID for the application process | `1000` |
+| `TZ` | Timezone for the container | `UTC` |
+| `S6_LOG_ENABLE` | Enable/Disable file logging | `1` |
+| `S6_LOG_MAX_SIZE` | Max size per log file (bytes) | `1048576` |
+| `S6_LOG_MAX_FILES` | Number of rotated log files to keep | `10` |
+
+## Logging
+
+This image uses `s6-log` for internal log rotation.
+- **System Logs**: Captured from console and stored at `/config/logs/daemonless/transmission-wireguard/`.
+- **Application Logs**: Managed by the app and typically found in `/config/logs/`.
+- **Podman Logs**: Output is mirrored to the console, so `podman logs` still works.
+
+## Tags
+
+| Tag | Source | Description |
+|-----|--------|-------------|
+| `:latest` | [Upstream Releases](https://transmissionbt.com/) | Latest upstream release |
+
+## WireGuard Configuration
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `WG_PRIVATE_KEY` | Yes | - | Your WireGuard private key |
+| `WG_PEER_PUBLIC_KEY` | Yes | - | VPN server's public key |
+| `WG_ENDPOINT` | Yes | - | VPN server address (host:port) |
+| `WG_ADDRESS` | No | `10.5.0.2/32` | Your tunnel IP address |
+| `WG_DNS` | No | `1.1.1.1` | DNS server to use |
+
 ## Volumes
 
 | Path | Description |
@@ -60,9 +94,26 @@ Transmission BitTorrent client running through a WireGuard VPN tunnel on FreeBSD
 | `/downloads` | Download directory |
 | `/watch` | Watch directory |
 
-## Logging
+## Ports
 
-This image uses `s6-log` for internal log rotation.
-- **System Logs**: Captured from console and stored at `/config/logs/daemonless/transmission-wireguard/`.
-- **Application Logs**: Managed by the app and typically found in `/config/logs/`.
-- **Podman Logs**: Output is mirrored to the console, so `podman logs` still works.
+| Port | Protocol | Description |
+|------|----------|-------------|
+| 9091 | TCP | Web UI / RPC |
+| 51413 | TCP/UDP | BitTorrent peer connections |
+
+## Notes
+
+- **User:** `bsd` (UID/GID set via PUID/PGID, default 1000)
+- **Base:** Built on `ghcr.io/daemonless/base-image` (FreeBSD)
+
+### Specific Requirements
+- **VNET Required:** Must use `--annotation 'org.freebsd.jail.vnet=new'`
+- **Kernel Module:** Host must have `if_wg` loaded (`kldload if_wg`)
+
+### Kill Switch
+Traffic is routed through the VPN interface. If the VPN drops, Transmission loses connectivity.
+
+## Links
+
+- [Website](https://transmissionbt.com/)
+- [FreshPorts](https://www.freshports.org/net-p2p/transmission-daemon/)

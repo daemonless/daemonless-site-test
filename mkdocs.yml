@@ -86,6 +86,7 @@ nav:
       - Traefik: images/traefik.md
       - Woodpecker: images/woodpecker.md
     - Media:
+      - Immich: images/immich.md
       - Immich Machine Learning: images/immich-ml.md
       - Immich Server: images/immich-server.md
     - Media Management:

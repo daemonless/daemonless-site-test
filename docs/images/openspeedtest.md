@@ -50,3 +50,25 @@ This image uses `s6-log` for internal log rotation.
 - **System Logs**: Captured from console and stored at `/config/logs/daemonless/openspeedtest/`.
 - **Application Logs**: Managed by the app and typically found in `/config/logs/`.
 - **Podman Logs**: Output is mirrored to the console, so `podman logs` still works.
+
+## Tags
+
+| Tag | Source | Description |
+|-----|--------|-------------|
+| `:latest` | [Upstream Releases](https://github.com/openspeedtest/Speed-Test) | Latest from git |
+
+## Ports
+
+| Port | Description |
+|------|-------------|
+| 3000 | Web UI |
+
+## Notes
+
+- **Base:** Built on `ghcr.io/daemonless/nginx-base-image` (FreeBSD)
+- **Storage:** No persistent storage required (client-side only)
+
+## Links
+
+- [Website](https://openspeedtest.com/)
+- [GitHub](https://github.com/openspeedtest/Speed-Test)

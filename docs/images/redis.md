@@ -51,15 +51,48 @@ Redis key-value store for [Immich](https://immich.app/) and other applications.
 | `S6_LOG_MAX_FILES` | Number of rotated log files to keep | `10` |
 | `REDIS_DATA` | Data directory path | `/config/data` |
 
-## Volumes
-
-| Path | Description |
-|------|-------------|
-| `/config` | Configuration and data directory |
-
 ## Logging
 
 This image uses `s6-log` for internal log rotation.
 - **System Logs**: Captured from console and stored at `/config/logs/daemonless/redis/`.
 - **Application Logs**: Managed by the app and typically found in `/config/logs/`.
 - **Podman Logs**: Output is mirrored to the console, so `podman logs` still works.
+
+## Tags
+
+| Tag | Source | Description |
+|-----|--------|-------------|
+| `:latest` | `databases/redis` | FreeBSD latest packages (Alias for :pkg-latest) |
+| `:pkg` | `databases/redis` | FreeBSD quarterly packages |
+| `:pkg-latest` | `databases/redis` | FreeBSD latest packages |
+
+## Volumes
+
+| Path | Description |
+|------|-------------|
+| `/config` | Configuration and data directory |
+
+## Ports
+
+| Port | Description |
+|------|-------------|
+| 6379 | Redis |
+
+## Configuration
+
+A default `redis.conf` is created on first run at `/config/redis.conf`. Edit to customize.
+
+Default settings:
+- Bind: 0.0.0.0
+- Append-only mode enabled
+- Protected mode disabled (for container use)
+
+## Notes
+
+- **User:** `bsd` (UID/GID set via PUID/PGID, default 1000)
+- **Base:** Built on `ghcr.io/daemonless/base-image` (FreeBSD)
+
+## Links
+
+- [Website](https://redis.io/)
+- [FreshPorts](https://www.freshports.org/databases/redis/)

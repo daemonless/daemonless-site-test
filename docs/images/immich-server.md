@@ -2,6 +2,9 @@
 
 Main application server (Node.js) for [Immich](https://immich.app/).
 
+!!! note "Part of the Immich Stack"
+    This is just one component of Immich. For the complete setup (docker-compose, configuration, etc.), please see the [Daemonless Immich Stack](https://github.com/daemonless/immich).
+
 | | |
 |---|---|
 | **Port** | 2283 |
@@ -64,6 +67,12 @@ Main application server (Node.js) for [Immich](https://immich.app/).
 | `IMMICH_MEDIA_LOCATION` | Media library directory | `/usr/src/app/library` |
 | `IMMICH_MACHINE_LEARNING_URL` | URL to ML service (see Notes) | - |
 
+## Tags
+
+| Tag | Source | Description |
+|-----|--------|-------------|
+| `:latest` | [Immich Releases](https://github.com/immich-app/immich/releases) | Latest upstream release |
+
 ## Volumes
 
 | Path | Description |
@@ -71,3 +80,21 @@ Main application server (Node.js) for [Immich](https://immich.app/).
 | `/usr/src/app/upload` | Uploaded photos/videos |
 | `/usr/src/app/library` | External library storage |
 | `/config` | Configuration directory |
+
+## Ports
+
+| Port | Description |
+|------|-------------|
+| 2283 | Web UI and API |
+
+## Notes
+
+- **User:** `bsd` (UID/GID set via PUID/PGID, default 1000)
+- **Base:** Built on `ghcr.io/daemonless/base-image` (FreeBSD)
+- **Machine Learning:** The `immich-ml` service requires Python bindings for onnxruntime, which are not currently available for FreeBSD. We recommend running the official `immich-machine-learning` container on a Linux host (or Linux VM/jail) and pointing this server to it via `IMMICH_MACHINE_LEARNING_URL`.
+- **Ultra HDR:** Includes patched `sharp` library to support Ultra HDR images from Pixel phones (via `libvips` 8.18+).
+
+## Links
+
+- [Immich](https://immich.app/)
+- [GitHub](https://github.com/immich-app/immich)
