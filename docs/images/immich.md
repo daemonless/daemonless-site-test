@@ -15,7 +15,7 @@ Native FreeBSD port of [Immich](https://immich.app/) - the self-hosted photo and
 
     1.  **Download `.env`** from official Immich releases:
         ```bash
-        fetch https://github.com/immich-app/immich/releases/latest/download/.env
+        fetch https://github.com/immich-app/immich/releases/latest/download/example.env
         ```
     
     2.  **Download `docker-compose.yml`**:
