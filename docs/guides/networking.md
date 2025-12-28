@@ -90,7 +90,21 @@ podman run -d --name gitea \
 
 ## Container-to-Container
 
-Containers on the default bridge network can communicate via IP:
+### DNS Resolution
+
+With `cni-dnsname` installed, containers can resolve each other by name:
+
+```bash
+# From inside one container, reach another by name
+ping immich_postgres
+curl http://immich_server:2283
+```
+
+This is required for multi-container apps like Immich where services need to find each other.
+
+### IP Lookup
+
+Alternatively, look up container IPs directly:
 
 ```bash
 podman inspect -f '{{.NetworkSettings.IPAddress}}' radarr

@@ -9,29 +9,50 @@ Native FreeBSD port of [Immich](https://immich.app/) - the self-hosted photo and
 | **Type** | Bundle / Stack |
 | **Source** | [github.com/daemonless/immich](https://github.com/daemonless/immich) |
 
+## Prerequisites
+
+```bash
+pkg install podman-suite cni-dnsname
+```
+
+The `cni-dnsname` package enables DNS resolution between containers, required for the Immich services to communicate.
+
 ## Quick Start
 
 === "Compose"
 
-    1.  **Download `.env`** from official Immich releases:
+    1.  **Create directory and download compose file**:
         ```bash
-        fetch https://github.com/immich-app/immich/releases/latest/download/example.env
+        mkdir -p /containers/immich
+        cd /containers/immich
+        fetch https://raw.githubusercontent.com/daemonless/immich/main/container-compose.yml
         ```
-    
-    2.  **Download `docker-compose.yml`**:
+
+    2.  **Create `.env` file**:
         ```bash
-        fetch https://raw.githubusercontent.com/daemonless/immich/main/docker-compose.yml
+        cat > .env << 'EOF'
+        UPLOAD_LOCATION=/containers/immich/library
+        DB_PASSWORD=changeme
+        DB_USERNAME=postgres
+        DB_DATABASE_NAME=immich
+        EOF
         ```
-    
-    3.  **Configure `.env`**:
-        Edit the file and set `UPLOAD_LOCATION` to your desired storage path.
-    
+
+    3.  **Create library directory**:
+        ```bash
+        mkdir -p /containers/immich/library
+        chown 1000:1000 /containers/immich/library
+        ```
+
     4.  **Start the Stack**:
         ```bash
         podman-compose up -d
         ```
-    
+
         Access the web interface at: http://localhost:2283
+
+!!! warning "Absolute Paths Required"
+    `UPLOAD_LOCATION` must be an absolute path (e.g., `/containers/immich/library`), not a relative path like `./library`.
 
 ## Architecture
 
@@ -66,7 +87,7 @@ The stack relies on the standard Immich `.env` file. Key variables include:
 
 | Path (Host) | Container Path | Description |
 |-------------|----------------|-------------|
-| `${UPLOAD_LOCATION}` | `/usr/src/app/upload` | Main media library |
+| `${UPLOAD_LOCATION}` | `/data` | Main media library |
 | `pgdata` (Volume) | `/config/data` | Database files |
 | `redis-data` (Volume) | `/config/data` | Redis persistence |
 
