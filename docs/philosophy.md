@@ -2,8 +2,6 @@
 
 **TL;DR:** Native FreeBSD container images for self-hosted apps using Podman + ocijail. No Linux VM needed.  See: [https://daemonless.io/quick-start/](https://daemonless.io/quick-start/)
 
-Hi r/selfhosted,
-
 A bit of background: I've been a FreeBSD user since the late 90s and was a ports committer from 2002-2010 (working on the GNOME and Multimedia teams).
 
 I've always kept a mixed homelab of Linux and FreeBSD, and while I use both daily, **I have always felt more "at home" with FreeBSD.** There is a logic and cohesiveness to the Base System + Ports approach that just clicks for me.
