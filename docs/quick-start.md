@@ -7,10 +7,8 @@ Get daemonless containers running on FreeBSD in 5 minutes.
 Install Podman and container networking:
 
 ```bash
-pkg install podman-suite cni-dnsname
+pkg install podman-suite
 ```
-
-The `cni-dnsname` package enables DNS resolution between containers, required for multi-container apps like Immich.
 
 !!! warning
     Currently, a temporary patch for ocijail is required for .NET applications (Radarr/Sonarr). This will be removed in a future update once OCI v1.3.0 support lands upstream.

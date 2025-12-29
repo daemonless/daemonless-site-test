@@ -393,7 +393,7 @@ def discover_images() -> dict:
             "tags": get_image_tags(repo_path) if metadata.get("type", "image") == "image" else [],
             "title": metadata.get("title", name.title()),
             "type": metadata.get("type", "image"),
-            "description": metadata.get("description"),
+            "description": metadata.get("description") or "",
             "parent": metadata.get("parent"),
             "icon": metadata.get("icon"),
         }
