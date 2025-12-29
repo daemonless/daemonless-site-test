@@ -43,19 +43,21 @@ def parse_containerfile_labels(containerfile: Path) -> dict:
     for match in re.finditer(pattern, content):
         key = match.group(1)
         value = match.group(2)
-        # Handle ${PACKAGES} or similar ARG references
         if value.startswith("${"):
             continue
         labels[key] = value
 
-    # Match org.opencontainers.image.title for display name
+    # Match org.opencontainers.image.title
     title_match = re.search(r'org\.opencontainers\.image\.title="([^"]*)"', content)
     if title_match:
         labels["title"] = title_match.group(1)
     
-    # Default type is image
-    labels["type"] = "image"
+    # Match Parent (FROM ...)
+    from_match = re.search(r"FROM\s+ghcr\.io/daemonless/([^:\s]+)", content)
+    if from_match:
+        labels["parent"] = from_match.group(1)
 
+    labels["type"] = "image"
     return labels
 
 
@@ -66,49 +68,6 @@ def get_image_tags(repo_path: Path) -> list[str]:
         tags.append("pkg")
         tags.append("pkg-latest")
     return tags
-
-
-def discover_images() -> dict:
-    """Scan repos directory and build image metadata from Containerfiles or .daemonless.yml."""
-    images = {}
-
-    if not REPOS_DIR.exists():
-        print(f"Repos directory not found: {REPOS_DIR}")
-        return images
-
-    for repo_path in sorted(REPOS_DIR.iterdir()):
-        if not repo_path.is_dir():
-            continue
-
-        name = repo_path.name
-        if name in SKIP_REPOS:
-            continue
-        
-        metadata = {}
-        metadata_file = repo_path / ".daemonless.yml"
-        containerfile = repo_path / "Containerfile"
-
-        if metadata_file.exists():
-            metadata = parse_metadata_file(metadata_file)
-        elif containerfile.exists():
-            metadata = parse_containerfile_labels(containerfile)
-        else:
-            continue
-
-        # Skip WIP images
-        if metadata.get("wip") == "true":
-            continue
-
-        images[name] = {
-            "category": metadata.get("category", "Uncategorized"),
-            "port": metadata.get("port"),
-            "tags": get_image_tags(repo_path) if metadata.get("type", "image") == "image" else [],
-            "title": metadata.get("title", name.title()),
-            "type": metadata.get("type", "image"),
-            "description": metadata.get("description"),
-        }
-
-    return images
 
 
 def parse_readme_sections(content: str) -> list[dict]:
@@ -309,6 +268,139 @@ def process_image(name: str, config: dict):
     out_path.write_text("\n".join(new_content))
 
 
+def generate_index_page(images: dict):
+    """Generate docs/images/index.md."""
+    lines = [
+        "# Container Fleet",
+        "",
+        "Explore our collection of high-performance, FreeBSD-native OCI containers.",
+        ""
+    ]
+
+    # Category Order
+    categories = [
+        "Infrastructure",
+        "Media Management",
+        "Downloaders",
+        "Media Servers",
+        "Databases",
+        "Photos & Media",
+        "Utilities",
+        "Uncategorized"
+    ]
+
+    # Group images
+    by_category = {}
+    for name, config in images.items():
+        cat = config.get("category", "Uncategorized")
+        by_category.setdefault(cat, []).append((name, config))
+
+    for cat in categories:
+        img_list = by_category.get(cat)
+        if not img_list:
+            continue
+        
+        lines.append(f"## {cat}")
+        lines.append("")
+
+        # Check if we need .NET column (Media Management usually)
+        is_dotnet_cat = (cat == "Media Management")
+        
+        header = "| Image | Port | Description |"
+        separator = "|-------|------|-------------|"
+        if is_dotnet_cat:
+            header += " .NET |"
+            separator += "------|"
+        
+        lines.append(header)
+        lines.append(separator)
+
+        for name, config in sorted(img_list):
+            title = config.get("title", name.title())
+            port = config.get("port", "-")
+            desc = config.get("description", "")
+            icon = config.get("icon", ":material-docker:")
+            
+            row = f"| [{icon} {title}]({name}.md) | {port} | {desc} |"
+            
+            if is_dotnet_cat:
+                parent = config.get("parent", "")
+                dotnet_mark = ":material-check:" if parent == "arr-base" else ""
+                row += f" {dotnet_mark} |"
+            
+            lines.append(row)
+        
+        lines.append("")
+
+    # Add Image Tags section
+    lines.extend([
+        "## Image Tags",
+        "",
+        "| Tag | Source | Description |",
+        "|-----|--------|-------------|",
+        "| `:latest` | Upstream releases | Newest version from project |",
+        "| `:pkg` | FreeBSD quarterly | Stable, tested in ports |",
+        "| `:pkg-latest` | FreeBSD latest | Rolling package updates |",
+        ""
+    ])
+
+    out_path = DOCS_DIR / "index.md"
+    out_path.write_text("\n".join(lines))
+
+
+def discover_images() -> dict:
+    """Scan repos directory and build image metadata from Containerfiles or .daemonless.yml."""
+    images = {}
+
+    if not REPOS_DIR.exists():
+        print(f"Repos directory not found: {REPOS_DIR}")
+        return images
+
+    for repo_path in sorted(REPOS_DIR.iterdir()):
+        if not repo_path.is_dir():
+            continue
+
+        name = repo_path.name
+        if name in SKIP_REPOS:
+            continue
+        
+        metadata = {}
+        file_metadata = {}
+        container_labels = {}
+
+        metadata_file = repo_path / ".daemonless.yml"
+        containerfile = repo_path / "Containerfile"
+
+        if metadata_file.exists():
+            file_metadata = parse_metadata_file(metadata_file)
+        
+        if containerfile.exists():
+            container_labels = parse_containerfile_labels(containerfile)
+
+        # Merge: file metadata overrides container labels
+        metadata = {**container_labels, **file_metadata}
+
+        if not metadata:
+            continue
+
+        # Skip WIP images
+        if metadata.get("wip") == "true":
+            continue
+
+        images[name] = {
+            "category": metadata.get("category", "Uncategorized"),
+            "port": metadata.get("port"),
+            "tags": get_image_tags(repo_path) if metadata.get("type", "image") == "image" else [],
+            "title": metadata.get("title", name.title()),
+            "type": metadata.get("type", "image"),
+            "description": metadata.get("description"),
+            "parent": metadata.get("parent"),
+            "icon": metadata.get("icon"),
+        }
+
+    return images
+
+
 def generate_nav_entries(images: dict) -> list[str]:
     """Generate the YAML lines for the Images navigation section."""
     lines = ["  - Images:", "    - Overview: images/index.md"]
@@ -365,6 +457,9 @@ def main():
         return
 
     print(f"Found {len(images)} images")
+
+    # Generate Index Page
+    generate_index_page(images)
 
     # Sync docs
     for name, config in images.items():

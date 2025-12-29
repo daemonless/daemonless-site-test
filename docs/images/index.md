@@ -1,72 +1,63 @@
-# Available Images
+# Container Fleet
 
-All images are available at `ghcr.io/daemonless/<image>`.
-
-## Media Management
-
-| Image | Port | Description | .NET |
-|-------|------|-------------|------|
-| [Radarr](radarr.md) | 7878 | Movie collection manager | :material-check: |
-| [Sonarr](sonarr.md) | 8989 | TV show collection manager | :material-check: |
-| [Lidarr](lidarr.md) | 8686 | Music collection manager | :material-check: |
-| [Readarr](readarr.md) | 8787 | Book collection manager | :material-check: |
-| [Prowlarr](prowlarr.md) | 9696 | Indexer manager for *arr apps | :material-check: |
-| [Overseerr](overseerr.md) | 5055 | Media request management | |
-
-## Downloaders
-
-| Image | Port | Description |
-|-------|------|-------------|
-| [SABnzbd](sabnzbd.md) | 8080 | Usenet downloader |
-| [Transmission](transmission.md) | 9091 | BitTorrent client |
-| [Transmission-WireGuard](transmission-wireguard.md) | 9091 | BitTorrent + WireGuard VPN |
-
-## Media Servers
-
-| Image | Port | Description |
-|-------|------|-------------|
-| [Jellyfin](jellyfin.md) | 8096 | Media streaming server |
-| [Tautulli](tautulli.md) | 8181 | Plex monitoring and stats |
+Explore our collection of high-performance, FreeBSD-native OCI containers.
 
 ## Infrastructure
 
 | Image | Port | Description |
 |-------|------|-------------|
-| [Traefik](traefik.md) | 80/443/8080 | Reverse proxy and load balancer |
-| [Tailscale](tailscale.md) | — | Mesh VPN |
-| [Gitea](gitea.md) | 3000 | Self-hosted Git service |
-| [Woodpecker](woodpecker.md) | 8000 | CI/CD server |
+| [:simple-gitea: Gitea](gitea.md) | 3000 | None |
+| [:simple-tailscale: Tailscale](tailscale.md) | None | None |
+| [:material-router-network: Traefik](traefik.md) | 80,443,8080 | None |
+| [:material-hammer: Woodpecker](woodpecker.md) | None | None |
+
+## Media Management
+
+| Image | Port | Description | .NET |
+|-------|------|-------------|------|
+| [:material-music: Lidarr](lidarr.md) | 8686 | None | :material-check: |
+| [:material-eye: Overseerr](overseerr.md) | 5055 | None |  |
+| [:material-magnet: Prowlarr](prowlarr.md) | 9696 | None | :material-check: |
+| [:material-movie: Radarr](radarr.md) | 7878 | None | :material-check: |
+| [:material-book: Readarr](readarr.md) | 8787 | None | :material-check: |
+| [:material-television: Sonarr](sonarr.md) | 8989 | None | :material-check: |
+
+## Downloaders
+
+| Image | Port | Description |
+|-------|------|-------------|
+| [:material-download-network: SABnzbd](sabnzbd.md) | 8080 | None |
+| [:simple-transmission: Transmission](transmission.md) | 9091 | None |
+
+## Media Servers
+
+| Image | Port | Description |
+|-------|------|-------------|
+| [:simple-jellyfin: Jellyfin](jellyfin.md) | 8096 | None |
+| [:simple-plex: Tautulli](tautulli.md) | 8181 | None |
 
 ## Utilities
 
 | Image | Port | Description |
 |-------|------|-------------|
-| [Nextcloud](nextcloud.md) | 80 | File hosting and collaboration |
-| [Mealie](mealie.md) | 9000 | Recipe manager |
-| [n8n](n8n.md) | 5678 | Workflow automation |
-| [UniFi](unifi.md) | 8443 | UniFi Network Controller |
-| [Vaultwarden](vaultwarden.md) | 80 | Bitwarden-compatible password manager |
-| [Organizr](organizr.md) | 80 | Service dashboard |
-| [OpenSpeedTest](openspeedtest.md) | 3000 | Network speed test |
-| [SmokePing](smokeping.md) | 80 | Network latency monitoring |
-| [Uptime Kuma](uptime-kuma.md) | 3001 | Website monitoring |
+| [:simple-nextcloud: Nextcloud](nextcloud.md) | 80 | None |
+| [:material-speedometer: OpenSpeedTest](openspeedtest.md) | 3000 | None |
+| [:material-view-dashboard: Organizr](organizr.md) | 80 | None |
+| [:material-pulse: SmokePing](smokeping.md) | 80 | None |
+| [:simple-ubiquiti: UniFi](unifi.md) | 8443 | None |
+| [:material-chart-line: Uptime Kuma](uptime-kuma.md) | 3001 | None |
+| [:simple-bitwarden: Vaultwarden](vaultwarden.md) | 80 | None |
+
+## Uncategorized
+
+| Image | Port | Description |
+|-------|------|-------------|
+| [:simple-wireguard: Transmission WireGuard](transmission-wireguard.md) | 9091 | None |
 
 ## Image Tags
 
-All images support three tags:
-
-| Tag | Package Source | Use Case |
-|-----|----------------|----------|
-| `:latest` | Upstream release | Newest features |
-| `:pkg` | FreeBSD quarterly | Stable, well-tested |
-| `:pkg-latest` | FreeBSD latest | Rolling updates |
-
-## .NET Apps
-
-Images marked with :material-check: in the .NET column require the `allow.mlock` annotation:
-
-```bash
---annotation 'org.freebsd.jail.allow.mlock=true'
-```
-
-This requires the [patched ocijail](../guides/ocijail-patch.md).
+| Tag | Source | Description |
+|-----|--------|-------------|
+| `:latest` | Upstream releases | Newest version from project |
+| `:pkg` | FreeBSD quarterly | Stable, tested in ports |
+| `:pkg-latest` | FreeBSD latest | Rolling package updates |

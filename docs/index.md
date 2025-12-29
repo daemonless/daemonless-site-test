@@ -1,18 +1,68 @@
-# daemonless
+---
+hide:
+  - navigation
+  - toc
+---
 
-**Native FreeBSD OCI Containers** — Jails without the System Administration.
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-logo">
+      <img src="assets/daemonless-logo.svg" alt="Daemonless">
+    </div>
+    <h1>daemonless</h1>
+    <p class="hero-subtitle">Native FreeBSD OCI Containers. Jails without the System Administration.</p>
+    <div class="hero-buttons">
+       <a href="quick-start/" class="md-button md-button--primary">Get Started</a>
+       <a href="images/" class="md-button">Explore Fleet</a>
+    </div>
+  </div>
+</div>
 
-Production-ready container images using Podman and ocijail. [Read our Philosophy :material-arrow-right:](philosophy.md)
+<div class="grid cards" markdown>
 
-## Features
+-   :material-server-network: **Reliable Foundation**
 
-- **s6 process supervision** — Reliable init system for containers
-- **PUID/PGID support** — Run as any user, not just root
-- **FreeBSD 14 & 15** — Support for current releases
-- **Minimal images** — Cleaned pkg cache, small footprint
-- **Port forwarding** — Full `-p` flag support with pf
+    ---
+
+    Built on **FreeBSD**, utilizing `s6` for robust process supervision and `ocijail` for secure isolation.
+
+-   :material-feather: **Minimal Footprint**
+
+    ---
+
+    Ultra-lightweight images with cleaned package caches and minimal overhead.
+
+-   :material-security: **Secure by Default**
+
+    ---
+
+    Run as any user with **PUID/PGID** support. True isolation with Jails.
+
+-   :material-lan-connect: **Networking**
+
+    ---
+
+    Full port forwarding support and seamless integration with `pf` firewall.
+
+-   :material-update: **Automated Updates**
+
+    ---
+
+    Automated CI/CD pipelines ensure images are built against the latest upstream releases and FreeBSD packages.
+
+-   :material-github: **Transparent & Open**
+
+    ---
+
+    100% open source. Every image is built from a visible `Containerfile`.
+
+</div>
 
 ## Quick Example
+
+Launch your first container in seconds with a familiar syntax.
+
+<div class="termy">
 
 ```bash
 podman run -d --name radarr \
@@ -23,54 +73,34 @@ podman run -d --name radarr \
   ghcr.io/daemonless/radarr:latest
 ```
 
-## Available Images
+</div>
 
-Over 20 images available:
-
-| Category | Images |
-|----------|--------|
-| **Media Management** | Radarr, Sonarr, Lidarr, Readarr, Prowlarr, Overseerr |
-| **Downloaders** | SABnzbd, Transmission, Transmission-WireGuard |
-| **Media Servers** | Jellyfin, Tautulli |
-| **Infrastructure** | Traefik, Tailscale, Gitea, Woodpecker CI |
-| **Utilities** | Nextcloud, Mealie, n8n, UniFi, Vaultwarden |
-
-[View all images :material-arrow-right:](images/index.md)
-
-## Image Tags
-
-| Tag | Source | Description |
-|-----|--------|-------------|
-| `:latest` | Upstream releases | Newest version from project |
-| `:pkg` | FreeBSD quarterly | Stable, tested in ports |
-| `:pkg-latest` | FreeBSD latest | Rolling package updates |
-
-## Getting Started
+## Why Daemonless?
 
 <div class="grid cards" markdown>
 
--   :material-rocket-launch: **Quick Start**
+-   **Philosophy**
 
     ---
 
-    Get your first container running in 5 minutes
+    We believe in the power of FreeBSD Jails but understand the convenience of OCI containers. Daemonless bridges the gap.
 
-    [:octicons-arrow-right-24: Quick Start](quick-start.md)
+    [:octicons-arrow-right-24: Read Philosophy](philosophy.md)
 
--   :material-book-open-variant: **Image Docs**
-
-    ---
-
-    Full documentation for each container image
-
-    [:octicons-arrow-right-24: Images](images/index.md)
-
--   :material-console: **Command Generator**
+-   **Architecture**
 
     ---
 
-    Interactive tool to build podman run commands
+    Understanding how Podman, ocijail, and FreeBSD kernel features work together.
 
-    [:octicons-arrow-right-24: Generator](generator.md)
+    [:octicons-arrow-right-24: View Architecture](architecture.md)
+
+-   **Community**
+
+    ---
+
+    Open source and community driven. Join us in building the future of FreeBSD containers.
+
+    [:octicons-mark-github-24: GitHub](https://github.com/daemonless)
 
 </div>
