@@ -34,6 +34,7 @@ Explore our collection of high-performance, FreeBSD-native OCI containers.
 | Image | Port | Description |
 |-------|------|-------------|
 | [:simple-jellyfin: Jellyfin](jellyfin.md) | 8096 | The Free Software Media System on FreeBSD |
+| [:simple-plex: Plex Media Server](plex.md) | 32400 | Plex Media Server on FreeBSD |
 | [:simple-plex: Tautulli](tautulli.md) | 8181 | Tautulli Plex monitoring on FreeBSD |
 
 ## Databases
