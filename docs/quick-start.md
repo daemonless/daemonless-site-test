@@ -104,4 +104,3 @@ See [ZFS Storage](guides/zfs.md) for the required `storage.conf` configuration.
 - [Available Images](images/index.md) — Full image catalog
 - [Permissions](guides/permissions.md) — Understanding PUID/PGID
 - [Networking](guides/networking.md) — Port forwarding vs host network
-- [Command Generator](generator.md) — Interactive config builder

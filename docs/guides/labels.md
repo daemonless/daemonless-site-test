@@ -62,10 +62,9 @@ We follow the [Open Container Initiative (OCI) Image Spec](https://github.com/op
 
 ## Why Labels Matter
 
-1. **Command Generator** — The [interactive tool](../generator.md) reads labels to populate ports, volumes, and annotations
-2. **Documentation** — This website uses labels to generate image documentation
-3. **CI/CD** — Pipelines use `io.daemonless.wip` to skip work-in-progress images
-4. **Version Tracking** — Upstream labels enable automated update detection
+1. **Documentation** — This website uses labels to generate image documentation
+1. **CI/CD** — Pipelines use `io.daemonless.wip` to skip work-in-progress images
+1. **Version Tracking** — Upstream labels enable automated update detection
 
 ## Guidelines for Contributors
 
