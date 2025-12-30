@@ -88,11 +88,36 @@ podman run -d --name gitea \
 - **Port Forwarding:** Standard `-p` mapping not supported by stock ocijail with VNET. Access via container's internal IP.
 - **Kernel Support:** Requires VNET support (default in FreeBSD 13+).
 
-## Container-to-Container
+## Container-to-Container Communication
 
-### DNS Resolution
+Multi-container apps (like Immich) need services to find each other. FreeBSD has some limitations here compared to Linux.
 
-With `cni-dnsname` installed, containers can resolve each other by name:
+### Option 1: Host Networking (Recommended)
+
+The simplest approach today. All containers share the host network and communicate via `localhost`:
+
+```yaml
+services:
+  app:
+    network_mode: host
+    environment:
+      - DB_HOSTNAME=localhost
+      - REDIS_HOSTNAME=localhost
+```
+
+| Pros | Cons |
+|------|------|
+| No extra setup | Port conflicts possible |
+| Works out of the box | Less isolation |
+| Matches Linux behavior | Services bind to host ports |
+
+### Option 2: DNS Resolution (cni-dnsname)
+
+!!! warning "Not in FreeBSD Ports"
+    `cni-dnsname` is not yet available in FreeBSD ports. You must build it from source:
+    [github.com/containers/dnsname](https://github.com/containers/dnsname)
+
+With cni-dnsname installed, containers can resolve each other by name:
 
 ```bash
 # From inside one container, reach another by name
@@ -100,15 +125,15 @@ ping immich_postgres
 curl http://immich_server:2283
 ```
 
-This is required for multi-container apps like Immich where services need to find each other.
+### Option 3: Static IPs
 
-### IP Lookup
-
-Alternatively, look up container IPs directly:
+Look up or assign container IPs and use them directly:
 
 ```bash
 podman inspect -f '{{.NetworkSettings.IPAddress}}' radarr
 ```
+
+Or create a network with static IPs in your compose file. More complex but avoids both host networking and dnsname.
 
 ## Comparison Summary
 
