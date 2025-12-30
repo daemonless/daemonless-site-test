@@ -51,6 +51,11 @@ def parse_containerfile_labels(containerfile: Path) -> dict:
     title_match = re.search(r'org\.opencontainers\.image\.title="([^"]*)"', content)
     if title_match:
         labels["title"] = title_match.group(1)
+
+    # Match org.opencontainers.image.description
+    desc_match = re.search(r'org\.opencontainers\.image\.description="([^"]*)"', content)
+    if desc_match:
+        labels["description"] = desc_match.group(1)
     
     # Match Parent (FROM ...)
     from_match = re.search(r"FROM\s+ghcr\.io/daemonless/([^:\s]+)", content)
