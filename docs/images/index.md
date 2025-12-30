@@ -36,6 +36,21 @@ Explore our collection of high-performance, FreeBSD-native OCI containers.
 | [:simple-jellyfin: Jellyfin](jellyfin.md) | 8096 | The Free Software Media System on FreeBSD |
 | [:simple-plex: Tautulli](tautulli.md) | 8181 | Tautulli Plex monitoring on FreeBSD |
 
+## Databases
+
+| Image | Port | Description |
+|-------|------|-------------|
+| [:simple-postgresql: Immich PostgreSQL](immich-postgres.md) | 5432 | PostgreSQL 14 with pgvector + VectorChord for Immich |
+| [:simple-redis: Redis](redis.md) | 6379 | Redis key-value store for FreeBSD |
+
+## Photos & Media
+
+| Image | Port | Description |
+|-------|------|-------------|
+| [:simple-googlephotos: Immich](immich.md) | None | Self-hosted photo and video management solution. |
+| [:material-brain: Immich Machine Learning](immich-ml.md) | 3003 | Immich ML service for FreeBSD |
+| [:material-server: Immich Server](immich-server.md) | 2283 | Immich photo management server for FreeBSD |
+
 ## Utilities
 
 | Image | Port | Description |
