@@ -146,15 +146,15 @@ def generate_mermaid(images: dict) -> str:
 
     for app in arr_apps:
         lines.append(f"    arr-base --> {app}")
-        lines.append(f'    click {app} "images/{app}.md" "View {app} Docs"')
+        lines.append(f'    click {app} "../images/{app}/" "View {app} Docs"')
 
     for app in nginx_apps:
         lines.append(f"    nginx-base --> {app}")
-        lines.append(f'    click {app} "images/{app}.md" "View {app} Docs"')
+        lines.append(f'    click {app} "../images/{app}/" "View {app} Docs"')
 
     for app in base_apps:
         lines.append(f"    base --> {app}")
-        lines.append(f'    click {app} "images/{app}.md" "View {app} Docs"')
+        lines.append(f'    click {app} "../images/{app}/" "View {app} Docs"')
 
     # Styling
     lines.append("")
