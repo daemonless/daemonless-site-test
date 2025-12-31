@@ -61,6 +61,31 @@ Each image is a standalone git repo:
 | `io.daemonless.pkg-name` | No | Package name for :pkg builds | `"radarr"` |
 | `io.daemonless.base` | No | Base image type | `"nginx"` |
 
+### Upstream Version Tracking
+
+These labels enable automated version checking:
+
+| Label | Purpose | Example |
+|-------|---------|---------|
+| `io.daemonless.upstream-mode` | Version check method | `"github"`, `"servarr"`, `"pkg"` |
+| `io.daemonless.upstream-repo` | GitHub repo (for github mode) | `"radarr/Radarr"` |
+| `io.daemonless.upstream-url` | Version API URL | `"https://radarr.servarr.com/v1/..."` |
+| `io.daemonless.upstream-package` | Package name (for npm/pkg) | `"n8n"` |
+| `io.daemonless.upstream-branch` | Branch to track | `"develop"` |
+
+### Upstream Mode Values
+
+| Mode | Description |
+|------|-------------|
+| `github` | Check GitHub releases |
+| `github_commits` | Track branch commits |
+| `servarr` | Use Servarr update API |
+| `sonarr` | Use Sonarr releases API |
+| `pkg` | Track FreeBSD package version |
+| `npm` | Check npm registry |
+| `ubiquiti` | Check Ubiquiti firmware API |
+| `source` | No upstream tracking |
+
 ### Category Values
 
 - `Media Management` - radarr, sonarr, lidarr, prowlarr, overseerr
@@ -210,6 +235,50 @@ EXPOSE 8080
 VOLUME /config
 ```
 
+## Init System (s6)
+
+daemonless containers use [s6](https://skarnet.org/software/s6/) for process supervision, providing reliable service management and flexible runtime configuration.
+
+### Why s6?
+
+| Benefit | Description |
+|---------|-------------|
+| **Zombie Reaping** | Properly reaps zombie processes |
+| **Auto-restart** | Restarts failed services automatically |
+| **Multi-process** | Run helper processes alongside the main app |
+| **Privilege Drop** | Drop privileges while still performing root-level init |
+
+### The /init Script
+
+The entrypoint for all containers. Responsibilities:
+
+1. **Environment Handling** — Captures environment variables for supervised services
+2. **Networking** — Configures loopback interface (`lo0`) for health checks
+3. **Initialization** — Executes startup scripts in order
+4. **Supervision** — Starts s6-svscan to manage processes
+
+### Initialization Sequence
+
+When a container starts, `/init` runs scripts from these directories:
+
+**1. Built-in Init (`/etc/cont-init.d/`)**
+
+Part of the container image. Handles:
+
+- Configuring the `bsd` user (PUID/PGID)
+- Setting permissions on `/config`
+- Generating default configuration files
+
+**2. Custom Init (`/custom-cont-init.d/`)**
+
+User-provided scripts. Mount your scripts here to run custom initialization:
+
+```bash
+podman run -d \
+  -v /path/to/my-scripts:/custom-cont-init.d:ro \
+  ghcr.io/daemonless/radarr:latest
+```
+
 ## s6 Service Files
 
 ### Service Run Script
@@ -285,6 +354,29 @@ exec s6-setuidgid bsd /app/bin/app
 | `S6_LOG_MAX_SIZE` | `1048576` | Max log file size (1MB) |
 | `S6_LOG_MAX_FILES` | `10` | Rotated files to keep |
 | `S6_LOG_STDOUT` | `1` | Mirror logs to stdout |
+
+**Log Locations:**
+
+| Location | Description |
+|----------|-------------|
+| `/config/logs/daemonless/<app>/` | s6 system logs (stdout/stderr) |
+| `/config/logs/` | Application-specific logs |
+| `podman logs <container>` | Console output (still works) |
+
+**Viewing Logs:**
+
+```bash
+# Podman logs (live)
+podman logs -f radarr
+
+# s6 logs (rotated files)
+tail -f /data/config/radarr/logs/daemonless/radarr/current
+
+# Application logs
+ls /data/config/radarr/logs/
+```
+
+s6-log automatically rotates when files reach `S6_LOG_MAX_SIZE`. Old logs are named with timestamps and kept up to `S6_LOG_MAX_FILES`.
 
 ### .NET Applications
 
