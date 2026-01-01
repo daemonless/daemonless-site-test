@@ -4,9 +4,9 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: "0 0 * * *" # Daily at midnight
+    - cron: "0 */6 * * *" # Every 6 hours
   workflow_dispatch:
-# Manually trigger deployment
+
 permissions:
   contents: read
   pages: write
@@ -14,11 +14,13 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: false # Cancel in-progress deployments on push
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      has_changes: ${{ steps.check.outputs.has_changes }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,8 +31,7 @@ jobs:
           python-version: "3.x"
 
       - name: Install dependencies
-        run: |
-          pip install mkdocs-material PyYAML
+        run: pip install mkdocs-material PyYAML
 
       - name: Fetch repositories
         env:
@@ -44,18 +45,33 @@ jobs:
           cd daemonless-io
           python3 scripts/sync_docs.py
 
+      - name: Check for changes
+        id: check
+        run: |
+          cd daemonless-io
+          if git diff --quiet docs/; then
+            echo "No changes detected"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build site
+        if: steps.check.outputs.has_changes == 'true' || github.event_name != 'schedule'
         run: |
           cd daemonless-io
           mkdocs build
 
       - name: Upload artifact
+        if: steps.check.outputs.has_changes == 'true' || github.event_name != 'schedule'
         uses: actions/upload-pages-artifact@v3
         with:
           path: daemonless-io/site/
 
   deploy:
     needs: build
+    if: needs.build.outputs.has_changes == 'true' || github.event_name != 'schedule'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
