@@ -285,6 +285,7 @@ def generate_index_page(images: dict):
     # Category Order
     categories = [
         "Infrastructure",
+        "Network",
         "Media Management",
         "Downloaders",
         "Media Servers",
