@@ -103,6 +103,27 @@ zfs create -o mountpoint=/var/db/containers/storage <pool>/podman
 
 See [ZFS Storage](guides/zfs.md) for the required `storage.conf` configuration.
 
+## Optional: Container DNS Resolution
+
+To use container names as hostnames (e.g., for `postgres` to be reachable by name), the `cni-dnsname` plugin is required. This is **not required** for basic port-forwarded setups but is essential for multi-container apps like **Immich** and **Mealie**.
+
+```bash
+# Clone the ports overlay
+git clone https://github.com/daemonless/freebsd-ports.git /usr/local/daemonless-ports
+
+# Build and install
+cd /usr/local/daemonless-ports/net/cni-dnsname
+make install clean
+```
+
+Verify it's installed:
+
+```bash
+ls /usr/local/libexec/cni/dnsname
+```
+
+See [Networking Guide](guides/networking.md) for more details.
+
 ## Next Steps
 
 - [Available Images](images/index.md) — Full image catalog

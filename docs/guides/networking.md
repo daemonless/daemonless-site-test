@@ -113,9 +113,28 @@ services:
 
 ### Option 2: DNS Resolution (cni-dnsname)
 
-!!! warning "Not in FreeBSD Ports"
-    `cni-dnsname` is not yet available in FreeBSD ports. You must build it from source:
-    [github.com/containers/dnsname](https://github.com/containers/dnsname)
+The `cni-dnsname` plugin enables containers to resolve each other by name (e.g., `postgres`, `redis`). This is required for multi-container apps like Immich and Mealie when using podman-compose.
+
+!!! warning "Not Yet in FreeBSD Ports"
+    `cni-dnsname` is not in the official FreeBSD ports tree. Use our port from [daemonless/freebsd-ports](https://github.com/daemonless/freebsd-ports).
+
+#### Installation
+
+```bash
+# Clone the ports overlay
+git clone https://github.com/daemonless/freebsd-ports.git /usr/local/daemonless-ports
+
+# Build and install
+cd /usr/local/daemonless-ports/net/cni-dnsname
+make install clean
+```
+
+#### Verify Installation
+
+```bash
+ls /usr/local/libexec/cni/dnsname
+# Should exist
+```
 
 With cni-dnsname installed, containers can resolve each other by name:
 
