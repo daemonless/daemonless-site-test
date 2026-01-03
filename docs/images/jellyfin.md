@@ -6,7 +6,7 @@ The Free Software Media System
 |---|---|
 | **Port** | 8096 |
 | **Registry** | `ghcr.io/daemonless/jellyfin` |
-| **Tags** | `:latest`, `:pkg`, `:pkg-latest` |
+| **Tags** | `:latest` |
 | **Source** | [github.com/daemonless/jellyfin](https://github.com/daemonless/jellyfin) |
 
 !!! warning "Requires patched ocijail"

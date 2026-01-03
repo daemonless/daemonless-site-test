@@ -1,8 +1,6 @@
-# mealie
+# Mealie
 
-> **STATUS: BETA/WIP** - Requires Python 3.12+ (FreeBSD support emerging).
-
-Self-hosted recipe manager and meal planner.
+Self-hosted recipe manager and meal planner on FreeBSD.
 
 | | |
 |---|---|
@@ -22,10 +20,7 @@ Self-hosted recipe manager and meal planner.
     ```bash
     podman run -d --name mealie \
       -p 9000:9000 \
-      -e PUID=1000 -e PGID=1000 \
-      --annotation 'org.freebsd.jail.allow.sysvipc=true' \
-      -v /path/to/data:/app/data \
-      -v /path/to/postgres:/var/db/postgres/data17 \
+      -v mealie-data:/app/data \
       ghcr.io/daemonless/mealie:latest
     ```
     
@@ -39,38 +34,99 @@ Self-hosted recipe manager and meal planner.
       mealie:
         image: ghcr.io/daemonless/mealie:latest
         container_name: mealie
-        annotations:
-          org.freebsd.jail.allow.sysvipc: "true"
         environment:
-          - PUID=1000
-          - PGID=1000
           - TZ=America/New_York
           - BASE_URL=https://mealie.example.com
         volumes:
-          - /data/mealie/app:/app/data
-          - /data/mealie/postgres:/var/db/postgres/data17
+          - mealie-data:/app/data
         ports:
           - 9000:9000
         restart: unless-stopped
+    
+    volumes:
+      mealie-data:
     ```
 
-## Environment Variables
+## Quick Start - PostgreSQL
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PUID` | User ID for the application process | `1000` |
-| `PGID` | Group ID for the application process | `1000` |
-| `TZ` | Timezone for the container | `UTC` |
-| `S6_LOG_ENABLE` | Enable/Disable file logging | `1` |
-| `S6_LOG_MAX_SIZE` | Max size per log file (bytes) | `1048576` |
-| `S6_LOG_MAX_FILES` | Number of rotated log files to keep | `10` |
+> **Requires [patched ocijail](https://github.com/daemonless/daemonless#ocijail-patch)** for SysV IPC support
 
-## Logging
+```bash
+# Create network
+podman network create mealie-net
 
-This image uses `s6-log` for internal log rotation.
-- **System Logs**: Captured from console and stored at `/config/logs/daemonless/mealie/`.
-- **Application Logs**: Managed by the app and typically found in `/config/logs/`.
-- **Podman Logs**: Output is mirrored to the console, so `podman logs` still works.
+# Start PostgreSQL
+podman run -d --name mealie-postgres \
+  --network mealie-net \
+  -e POSTGRES_USER=mealie \
+  -e POSTGRES_PASSWORD=mealie \
+  -e POSTGRES_DB=mealie \
+  --annotation 'org.freebsd.jail.allow.sysvipc=true' \
+  -v mealie-postgres:/var/db/postgres \
+  ghcr.io/daemonless/postgres:17
+
+# Start Mealie
+podman run -d --name mealie \
+  --network mealie-net \
+  -p 9000:9000 \
+  -e DB_ENGINE=postgres \
+  -e POSTGRES_USER=mealie \
+  -e POSTGRES_PASSWORD=mealie \
+  -e POSTGRES_SERVER=mealie-postgres \
+  -e POSTGRES_PORT=5432 \
+  -e POSTGRES_DB=mealie \
+  -v mealie-data:/app/data \
+  ghcr.io/daemonless/mealie:latest
+```
+
+## podman-compose - PostgreSQL
+
+> **Requires [patched ocijail](https://github.com/daemonless/daemonless#ocijail-patch)** for SysV IPC support
+
+```yaml
+services:
+  mealie:
+    image: ghcr.io/daemonless/mealie:latest
+    container_name: mealie
+    depends_on:
+      - postgres
+    environment:
+      - TZ=America/New_York
+      - BASE_URL=https://mealie.example.com
+      - DB_ENGINE=postgres
+      - POSTGRES_USER=mealie
+      - POSTGRES_PASSWORD=mealie
+      - POSTGRES_SERVER=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=mealie
+    volumes:
+      - mealie-data:/app/data
+    ports:
+      - 9000:9000
+    restart: unless-stopped
+
+  postgres:
+    image: ghcr.io/daemonless/postgres:17
+    container_name: mealie-postgres
+    annotations:
+      org.freebsd.jail.allow.sysvipc: "true"
+    environment:
+      - POSTGRES_USER=mealie
+      - POSTGRES_PASSWORD=mealie
+      - POSTGRES_DB=mealie
+    volumes:
+      - mealie-postgres:/var/db/postgres
+    # healthcheck:  # Not yet supported on FreeBSD
+    #   test: ["CMD", "pg_isready", "-q", "-d", "mealie", "-U", "mealie"]
+    #   interval: 30s
+    #   timeout: 20s
+    #   retries: 3
+    restart: unless-stopped
+
+volumes:
+  mealie-data:
+  mealie-postgres:
+```
 
 ## Tags
 
@@ -82,17 +138,34 @@ This image uses `s6-log` for internal log rotation.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `PUID` | 1000 | User ID for app |
-| `PGID` | 1000 | Group ID for app |
-| `TZ` | UTC | Timezone |
-| `BASE_URL` | - | Public URL |
+| `TZ` | `UTC` | Timezone |
+| `BASE_URL` | - | Public URL for the instance |
+| `DB_ENGINE` | `sqlite` | Database engine (`sqlite` or `postgres`) |
+| `ALLOW_SIGNUP` | `true` | Enable/disable user registration |
+
+### PostgreSQL Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `POSTGRES_USER` | - | Database user |
+| `POSTGRES_PASSWORD` | - | Database password |
+| `POSTGRES_SERVER` | - | Database hostname |
+| `POSTGRES_PORT` | `5432` | Database port |
+| `POSTGRES_DB` | - | Database name |
+
+### OpenAI Integration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OPENAI_BASE_URL` | - | OpenAI-compatible API URL |
+| `OPENAI_API_KEY` | - | API key |
+| `OPENAI_MODEL` | - | Model name (e.g., `gpt-4o-mini`) |
 
 ## Volumes
 
 | Path | Description |
 |------|-------------|
-| `/app/data` | Application data |
-| `/var/db/postgres/data17` | Embedded PostgreSQL data |
+| `/app/data` | Application data (recipes, images, SQLite DB) |
 
 ## Ports
 
@@ -102,13 +175,11 @@ This image uses `s6-log` for internal log rotation.
 
 ## Notes
 
-- **User:** `bsd` (UID/GID set via PUID/PGID, default 1000)
-- **Base:** Built on `ghcr.io/daemonless/base-image` (FreeBSD)
-
-### Specific Requirements
-- **PostgreSQL:** Requires `--annotation 'org.freebsd.jail.allow.sysvipc=true'` for shared memory (Requires [patched ocijail](https://github.com/daemonless/daemonless#ocijail-patch)).
+- **User:** `bsd` (UID/GID 1000)
+- **PostgreSQL:** Requires `--annotation 'org.freebsd.jail.allow.sysvipc=true'`
 
 ## Links
 
-- [Website](https://mealie.io/)
+- [Mealie Website](https://mealie.io/)
+- [Mealie Documentation](https://docs.mealie.io/)
 - [GitHub](https://github.com/mealie-recipes/mealie)

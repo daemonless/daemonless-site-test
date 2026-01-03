@@ -11,6 +11,13 @@ Explore our collection of high-performance, FreeBSD-native OCI containers.
 | [:material-router-network: Traefik](traefik.md) | 80,443,8080 | Traefik reverse proxy on FreeBSD |
 | [:material-hammer: Woodpecker](woodpecker.md) | None | Woodpecker CI server and agent |
 
+## Network
+
+| Image | Port | Description |
+|-------|------|-------------|
+| [:simple-adguard: AdGuard Home](adguardhome.md) | 53,67,68,80,443,784,853,3000,5443,6060,8853 | Network-wide ads & trackers blocking DNS server on FreeBSD |
+| [:simple-adguard: AdGuardHome Sync](adguardhome-sync.md) | 8080 | Sync AdGuardHome config to replica instances |
+
 ## Media Management
 
 | Image | Port | Description | .NET |
@@ -32,7 +39,6 @@ Explore our collection of high-performance, FreeBSD-native OCI containers.
 
 | Image | Port | Description |
 |-------|------|-------------|
-| [:simple-jellyfin: Jellyfin](jellyfin.md) | 8096 | The Free Software Media System on FreeBSD |
 | [:simple-plex: Plex Media Server](plex.md) | 32400 | Plex Media Server on FreeBSD |
 | [:simple-plex: Tautulli](tautulli.md) | 8181 | Tautulli Plex monitoring on FreeBSD |
 
@@ -41,6 +47,7 @@ Explore our collection of high-performance, FreeBSD-native OCI containers.
 | Image | Port | Description |
 |-------|------|-------------|
 | [:simple-postgresql: Immich PostgreSQL](immich-postgres.md) | 5432 | PostgreSQL 14 with pgvector + VectorChord for Immich |
+| [:material-database: PostgreSQL ${PG_VERSION}](postgres.md) | 5432 | PostgreSQL ${PG_VERSION} on FreeBSD |
 | [:simple-redis: Redis](redis.md) | 6379 | Redis key-value store for FreeBSD |
 
 ## Photos & Media
@@ -55,6 +62,7 @@ Explore our collection of high-performance, FreeBSD-native OCI containers.
 
 | Image | Port | Description |
 |-------|------|-------------|
+| [:material-food: Mealie](mealie.md) | 9000 | Mealie Recipe Manager on FreeBSD |
 | [:simple-nextcloud: Nextcloud](nextcloud.md) | 80 | Nextcloud self-hosted cloud on FreeBSD |
 | [:material-speedometer: OpenSpeedTest](openspeedtest.md) | 3000 | HTML5 Network Speed Test on FreeBSD |
 | [:material-view-dashboard: Organizr](organizr.md) | 80 | HTPC/Homelab Services Organizer on FreeBSD |
@@ -67,6 +75,7 @@ Explore our collection of high-performance, FreeBSD-native OCI containers.
 
 | Image | Port | Description |
 |-------|------|-------------|
+| [:simple-jellyfin: Jellyfin](jellyfin.md) | 8096 | The Free Software Media System on FreeBSD |
 | [:simple-wireguard: Transmission WireGuard](transmission-wireguard.md) | 9091 | Transmission BitTorrent client with WireGuard VPN on FreeBSD |
 
 ## Image Tags

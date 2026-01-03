@@ -4,6 +4,10 @@ Get daemonless containers running on FreeBSD in 5 minutes.
 
 ## Prerequisites
 
+!!! failure "Root Privileges Required"
+    **Podman on FreeBSD currently requires root.** Rootless mode is not yet supported.
+    All commands in this guide must be run as root (or via `sudo`/`doas`).
+
 Install Podman and container networking:
 
 ```bash
